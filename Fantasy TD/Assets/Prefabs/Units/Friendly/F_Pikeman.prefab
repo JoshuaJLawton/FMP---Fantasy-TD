@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 1815199947024770872}
   - component: {fileID: 1815199947024770868}
   - component: {fileID: -3189832043181885445}
-  - component: {fileID: 1000196874}
+  - component: {fileID: -2460300914300195631}
   m_Layer: 0
   m_Name: F_Pikeman
   m_TagString: Player
@@ -137,7 +137,7 @@ NavMeshAgent:
   m_BaseOffset: -0.1
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &1000196874
+--- !u!114 &-2460300914300195631
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -146,12 +146,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 1816234842215548001}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1a46c303c70f4bf4489b2f7464935a31, type: 3}
+  m_Script: {fileID: 11500000, guid: 893e41861652710499786bfe7b15b00c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   Gm: {fileID: 0}
   GM: {fileID: 0}
+  AttackObject: {fileID: 0}
+  MoveLocationTarget: {fileID: 0}
   Health: 0
+  AttackDamage: 0
   MainCam: {fileID: 0}
   agent: {fileID: 0}
 --- !u!1 &1816250988309949599

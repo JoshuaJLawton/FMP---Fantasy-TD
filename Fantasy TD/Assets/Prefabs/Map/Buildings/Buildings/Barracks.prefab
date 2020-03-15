@@ -11,12 +11,13 @@ GameObject:
   - component: {fileID: 5235765985090379480}
   - component: {fileID: 5247246722625403130}
   - component: {fileID: 5257222532540612816}
+  - component: {fileID: 2211208217478251957}
   m_Layer: 0
   m_Name: Barracks
-  m_TagString: Untagged
+  m_TagString: Barracks
   m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_NavMeshLayer: 1
+  m_StaticEditorFlags: 8
   m_IsActive: 1
 --- !u!4 &5235765985090379480
 Transform:
@@ -80,6 +81,22 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!208 &2211208217478251957
+NavMeshObstacle:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5233535405896499760}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Shape: 1
+  m_Extents: {x: 4.682, y: 4.504, z: 4.4300003}
+  m_MoveThreshold: 0.1
+  m_Carve: 0
+  m_CarveOnlyStationary: 1
+  m_Center: {x: 0, y: 4.504, z: 0}
+  m_TimeToStationary: 0.5
 --- !u!1 &5233591511275594090
 GameObject:
   m_ObjectHideFlags: 0
@@ -95,8 +112,8 @@ GameObject:
   m_Name: TB_Barracks_Lvl4B_DoorB
   m_TagString: Untagged
   m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_NavMeshLayer: 1
+  m_StaticEditorFlags: 8
   m_IsActive: 1
 --- !u!4 &5239799738790992060
 Transform:
@@ -173,8 +190,8 @@ GameObject:
   m_Name: TB_Barracks_Lvl4B_DoorA
   m_TagString: Untagged
   m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_NavMeshLayer: 1
+  m_StaticEditorFlags: 8
   m_IsActive: 1
 --- !u!4 &5239925775482375342
 Transform:

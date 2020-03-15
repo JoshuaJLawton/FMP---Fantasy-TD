@@ -55,10 +55,47 @@ public class GameManager : MonoBehaviour
             {
                 switch (ObjectInfo.transform.gameObject.tag)
                 {
+                    // Sets the Unit as the current unit (The unit to be controlled)
                     case "Player":
                         Debug.Log("Current Unit is " + ObjectInfo.transform.gameObject.name);
                         CurrentUnit = ObjectInfo.transform.gameObject;
                         break;
+
+                    // Sets the enemy unit as the current unit's attack target
+                    case "Enemy":
+                        if (CurrentUnit != null)
+                        {
+                            // Checks which kind of script is on the current unit based on its class
+                            if (CurrentUnit.GetComponent<F_Knight>() != null)
+                            {
+                                CurrentUnit.GetComponent<F_Knight>().AttackTarget = ObjectInfo.transform.gameObject;
+                            }
+                            else if (CurrentUnit.GetComponent<F_Archer>() != null)
+                            {
+                                CurrentUnit.GetComponent<F_Archer>().AttackTarget = ObjectInfo.transform.gameObject;
+                            }
+                            else if (CurrentUnit.GetComponent<F_Pikeman>() != null)
+                            {
+                                CurrentUnit.GetComponent<F_Pikeman>().AttackTarget = ObjectInfo.transform.gameObject;
+                            }
+                            else if (CurrentUnit.GetComponent<F_Wizard>() != null)
+                            {
+                                CurrentUnit.GetComponent<F_Wizard>().AttackTarget = ObjectInfo.transform.gameObject;
+                            }
+                        }
+                        
+                        break;
+
+                    case "Barracks":
+                        break;
+
+                    case "Apothecary":
+                        break;
+
+                    case "Ground":
+
+                        break;
+
                     case "Spawn Gate":
                         if (ObjectInfo.transform.gameObject.GetComponent<SpawnGate>().UnitOnGate == false)
                         {
@@ -68,7 +105,6 @@ public class GameManager : MonoBehaviour
                         break;
                 }
             }
-            
         }
     }
 }

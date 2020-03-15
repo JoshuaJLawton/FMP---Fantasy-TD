@@ -2,13 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Unit : MonoBehaviour
+public class E_Pikeman : Pikeman
 {
-    public GameObject Gm;
-    public GameManager GM;
-
-    public float Health;
-
     // Start is called before the first frame update
     void Start()
     {

@@ -62,21 +62,21 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Scripts\Archer.cs" />
-    <Compile Include="Assets\Scripts\E_Archer.cs" />
-    <Compile Include="Assets\Scripts\E_Knight.cs" />
-    <Compile Include="Assets\Scripts\E_Pikeman.cs" />
-    <Compile Include="Assets\Scripts\E_Wizard.cs" />
-    <Compile Include="Assets\Scripts\F_Archer.cs" />
-    <Compile Include="Assets\Scripts\F_Knight.cs" />
-    <Compile Include="Assets\Scripts\F_Pikeman.cs" />
-    <Compile Include="Assets\Scripts\F_Wizard.cs" />
     <Compile Include="Assets\Scripts\GameManager.cs" />
-    <Compile Include="Assets\Scripts\Knight.cs" />
-    <Compile Include="Assets\Scripts\Pikeman.cs" />
     <Compile Include="Assets\Scripts\SpawnGate.cs" />
-    <Compile Include="Assets\Scripts\Unit.cs" />
-    <Compile Include="Assets\Scripts\Wizard.cs" />
+    <Compile Include="Assets\Scripts\Units\Archer.cs" />
+    <Compile Include="Assets\Scripts\Units\E_Archer.cs" />
+    <Compile Include="Assets\Scripts\Units\E_Knight.cs" />
+    <Compile Include="Assets\Scripts\Units\E_Pikeman.cs" />
+    <Compile Include="Assets\Scripts\Units\E_Wizard.cs" />
+    <Compile Include="Assets\Scripts\Units\F_Archer.cs" />
+    <Compile Include="Assets\Scripts\Units\F_Knight.cs" />
+    <Compile Include="Assets\Scripts\Units\F_Pikeman.cs" />
+    <Compile Include="Assets\Scripts\Units\F_Wizard.cs" />
+    <Compile Include="Assets\Scripts\Units\Knight.cs" />
+    <Compile Include="Assets\Scripts\Units\Pikeman.cs" />
+    <Compile Include="Assets\Scripts\Units\Unit.cs" />
+    <Compile Include="Assets\Scripts\Units\Wizard.cs" />
     <Reference Include="Unity.Timeline.Editor">
       <HintPath>F:/Uni Work/FMP 2020/Game Project/Fantasy TD/FMP - Fantasy TD/Fantasy TD/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
     </Reference>

@@ -6,6 +6,11 @@ TagManager:
   tags:
   - Ground
   - Spawn Gate
+  - Apothecary
+  - Income
+  - Barracks
+  - Main Castle
+  - Enemy
   layers:
   - Default
   - TransparentFX

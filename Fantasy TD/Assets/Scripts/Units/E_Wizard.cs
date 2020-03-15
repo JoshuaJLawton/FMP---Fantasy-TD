@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Knight : Unit
+public class E_Wizard : Wizard
 {
     // Start is called before the first frame update
     void Start()

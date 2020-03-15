@@ -15,8 +15,8 @@ GameObject:
   m_Name: TB_Bd_Window_Small
   m_TagString: Untagged
   m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_NavMeshLayer: 1
+  m_StaticEditorFlags: 8
   m_IsActive: 1
 --- !u!4 &138065524326506675
 Transform:
@@ -93,8 +93,8 @@ GameObject:
   m_Name: TB_Bd_Door_Arch
   m_TagString: Untagged
   m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_NavMeshLayer: 1
+  m_StaticEditorFlags: 8
   m_IsActive: 1
 --- !u!4 &140866365749937613
 Transform:
@@ -165,12 +165,16 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 138218088129976495}
+  - component: {fileID: 6757396563226005901}
+  - component: {fileID: 6282841092660685279}
+  - component: {fileID: 7913549853658384772}
+  - component: {fileID: 6742743939023984926}
   m_Layer: 0
   m_Name: Apothecary Guild
-  m_TagString: Untagged
+  m_TagString: Apothecary
   m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_NavMeshLayer: 1
+  m_StaticEditorFlags: 8
   m_IsActive: 1
 --- !u!4 &138218088129976495
 Transform:
@@ -214,6 +218,87 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
+--- !u!64 &6757396563226005901
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 143293619971802657}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Convex: 0
+  m_CookingOptions: 14
+  m_Mesh: {fileID: 0}
+--- !u!65 &6282841092660685279
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 143293619971802657}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 7.5, y: 2, z: 10}
+  m_Center: {x: 5, y: 1, z: 0}
+--- !u!23 &7913549853658384772
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 143293619971802657}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 0}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+--- !u!208 &6742743939023984926
+NavMeshObstacle:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 143293619971802657}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Shape: 1
+  m_Extents: {x: 2.5, y: 4, z: 3.25}
+  m_MoveThreshold: 0.1
+  m_Carve: 0
+  m_CarveOnlyStationary: 1
+  m_Center: {x: 0.65, y: 4, z: 0.75}
+  m_TimeToStationary: 0.5
 --- !u!1 &143393577221406513
 GameObject:
   m_ObjectHideFlags: 0
@@ -229,8 +314,8 @@ GameObject:
   m_Name: TB_Bd_Window_Small (4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_NavMeshLayer: 1
+  m_StaticEditorFlags: 8
   m_IsActive: 1
 --- !u!4 &138021072735342585
 Transform:
@@ -307,8 +392,8 @@ GameObject:
   m_Name: TB_Bd_DoorFrame_Arch
   m_TagString: Untagged
   m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_NavMeshLayer: 1
+  m_StaticEditorFlags: 8
   m_IsActive: 1
 --- !u!4 &140878803995129799
 Transform:
@@ -385,8 +470,8 @@ GameObject:
   m_Name: TB_Bd_House_Door
   m_TagString: Untagged
   m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_NavMeshLayer: 1
+  m_StaticEditorFlags: 8
   m_IsActive: 1
 --- !u!4 &141044775618961797
 Transform:
@@ -463,8 +548,8 @@ GameObject:
   m_Name: TB_Bd_House
   m_TagString: Untagged
   m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_NavMeshLayer: 1
+  m_StaticEditorFlags: 8
   m_IsActive: 1
 --- !u!4 &137925016227549549
 Transform:
@@ -541,8 +626,8 @@ GameObject:
   m_Name: TB_Bd_Window_Small (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_NavMeshLayer: 1
+  m_StaticEditorFlags: 8
   m_IsActive: 1
 --- !u!4 &140821509058493205
 Transform:
@@ -619,8 +704,8 @@ GameObject:
   m_Name: TB_Bd_Chimney_C
   m_TagString: Untagged
   m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_NavMeshLayer: 1
+  m_StaticEditorFlags: 8
   m_IsActive: 1
 --- !u!4 &138272186891301079
 Transform:
@@ -695,8 +780,8 @@ GameObject:
   m_Name: TB_Bd_Door_Arch
   m_TagString: Untagged
   m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_NavMeshLayer: 1
+  m_StaticEditorFlags: 8
   m_IsActive: 1
 --- !u!4 &137998308226270787
 Transform:
@@ -724,6 +809,14 @@ PrefabInstance:
     - target: {fileID: 1106220561013982, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
       propertyPath: m_Name
       value: TB_Bd_FenceEntire (12)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1106220561013982, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 1106220561013982, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4958128180323406, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
       propertyPath: m_LocalPosition.x
@@ -800,6 +893,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: TB_Bd_FenceEntire (18)
       objectReference: {fileID: 0}
+    - target: {fileID: 1106220561013982, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 1106220561013982, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4958128180323406, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
       propertyPath: m_LocalPosition.x
       value: 8.8
@@ -874,6 +975,14 @@ PrefabInstance:
     - target: {fileID: 1106220561013982, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
       propertyPath: m_Name
       value: TB_Bd_FenceEntire (8)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1106220561013982, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 1106220561013982, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4958128180323406, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
       propertyPath: m_LocalPosition.x
@@ -950,6 +1059,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: TB_Bd_FenceEntire (4)
       objectReference: {fileID: 0}
+    - target: {fileID: 1106220561013982, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 1106220561013982, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4958128180323406, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
       propertyPath: m_LocalPosition.x
       value: 4.25
@@ -1024,6 +1141,14 @@ PrefabInstance:
     - target: {fileID: 1106220561013982, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
       propertyPath: m_Name
       value: TB_Bd_FenceEntire (6)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1106220561013982, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 1106220561013982, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4958128180323406, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1100,6 +1225,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: TB_Bd_FenceEntire (11)
       objectReference: {fileID: 0}
+    - target: {fileID: 1106220561013982, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 1106220561013982, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4958128180323406, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
       propertyPath: m_LocalPosition.x
       value: 8.8
@@ -1174,6 +1307,14 @@ PrefabInstance:
     - target: {fileID: 1106220561013982, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
       propertyPath: m_Name
       value: TB_Bd_FenceEntire (7)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1106220561013982, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 1106220561013982, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4958128180323406, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1250,6 +1391,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: TB_Bd_FenceEntire (13)
       objectReference: {fileID: 0}
+    - target: {fileID: 1106220561013982, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 1106220561013982, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4958128180323406, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
       propertyPath: m_LocalPosition.x
       value: 2.95
@@ -1324,6 +1473,14 @@ PrefabInstance:
     - target: {fileID: 1106220561013982, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
       propertyPath: m_Name
       value: TB_Bd_FenceEntire (10)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1106220561013982, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 1106220561013982, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4958128180323406, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1400,6 +1557,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: TB_Bd_FenceEntire (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 1106220561013982, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 1106220561013982, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4958128180323406, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
       propertyPath: m_LocalPosition.x
       value: 2.95
@@ -1474,6 +1639,14 @@ PrefabInstance:
     - target: {fileID: 1106220561013982, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
       propertyPath: m_Name
       value: TB_Bd_FenceEntire (20)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1106220561013982, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 1106220561013982, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4958128180323406, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1550,6 +1723,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: TB_Bd_FenceEntire (14)
       objectReference: {fileID: 0}
+    - target: {fileID: 1106220561013982, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 1106220561013982, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4958128180323406, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
       propertyPath: m_LocalPosition.x
       value: 4.25
@@ -1624,6 +1805,14 @@ PrefabInstance:
     - target: {fileID: 1106220561013982, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
       propertyPath: m_Name
       value: TB_Bd_FenceEntire
+      objectReference: {fileID: 0}
+    - target: {fileID: 1106220561013982, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 1106220561013982, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4958128180323406, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1700,6 +1889,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: TB_Bd_FenceEntire (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 1106220561013982, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 1106220561013982, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4958128180323406, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
       propertyPath: m_LocalPosition.x
       value: 1
@@ -1774,6 +1971,14 @@ PrefabInstance:
     - target: {fileID: 1106220561013982, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
       propertyPath: m_Name
       value: TB_Bd_FenceEntire (17)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1106220561013982, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 1106220561013982, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4958128180323406, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1850,6 +2055,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: TB_Bd_FenceEntire (19)
       objectReference: {fileID: 0}
+    - target: {fileID: 1106220561013982, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 1106220561013982, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4958128180323406, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
       propertyPath: m_LocalPosition.x
       value: 1
@@ -1924,6 +2137,14 @@ PrefabInstance:
     - target: {fileID: 1106220561013982, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
       propertyPath: m_Name
       value: TB_Bd_FenceEntire (5)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1106220561013982, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 1106220561013982, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4958128180323406, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2000,6 +2221,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: TB_Bd_FenceEntire (15)
       objectReference: {fileID: 0}
+    - target: {fileID: 1106220561013982, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 1106220561013982, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4958128180323406, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
       propertyPath: m_LocalPosition.x
       value: 5.55
@@ -2074,6 +2303,14 @@ PrefabInstance:
     - target: {fileID: 1106220561013982, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
       propertyPath: m_Name
       value: TB_Bd_FenceEntire (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1106220561013982, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 1106220561013982, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4958128180323406, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2150,6 +2387,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: TB_Bd_FenceEntire (9)
       objectReference: {fileID: 0}
+    - target: {fileID: 1106220561013982, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 1106220561013982, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4958128180323406, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
       propertyPath: m_LocalPosition.x
       value: 8.8
@@ -2224,6 +2469,14 @@ PrefabInstance:
     - target: {fileID: 1106220561013982, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
       propertyPath: m_Name
       value: TB_Bd_FenceEntire (16)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1106220561013982, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 1106220561013982, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4958128180323406, guid: c0011054bf7fb384e88cb0384c749959, type: 3}
       propertyPath: m_LocalPosition.x
