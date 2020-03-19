@@ -11,7 +11,10 @@ public class Pikeman : Unit
         Gm = GameObject.Find("Game Manager");
         GM = Gm.GetComponent<GameManager>();
 
+        // Sets the Knight's class
+        UnitClass = GetUnitClass();
         // Pikeman has high health
+        MaxHealth = 75;
         Health = 75;
         // Pikeman deals low damage
         AttackDamage = 5;
@@ -24,113 +27,27 @@ public class Pikeman : Unit
     // Executes the Pikeman's attack routine
     public void Attack()
     {
+        Debug.Log("Attack Initiated");
+
+        // Checks to see if the enemy is a pikeman (Pikemen deal back 20% of all close range damage taken)
+        if (AttackTarget.GetComponent<F_Pikeman>() != null || AttackTarget.GetComponent<E_Pikeman>() != null)
+        {
+            UnitClass.Health = UnitClass.Health - UnitClass.AttackDamage * 0.2f;
+        }
+
         if (AttackTarget != null)
         {
-            // Checks to see if the attacker is a player unit
-            if (this.GetComponent<F_Pikeman>() != null)
+            // If the enemy will survive the next attack
+            if (EnemyClassScript().Health > AttackDamage)
             {
-                // Checks which kind of script is on the target unit based on its class
-                if (AttackTarget.GetComponent<E_Knight>() != null)
-                {
-                    if (AttackTarget.GetComponent<E_Knight>().Health > 0)
-                    {
-                        AttackTarget.GetComponent<E_Knight>().Health = AttackTarget.GetComponent<E_Knight>().Health - AttackDamage;
-                        Debug.Log("Successful Attack");
-                    }
-                    else
-                    {
-                        AttackTarget = null;
-                    }
-                }
-                else if (AttackTarget.GetComponent<E_Archer>() != null)
-                {
-                    if (AttackTarget.GetComponent<E_Archer>().Health > 0)
-                    {
-                        AttackTarget.GetComponent<E_Archer>().Health = AttackTarget.GetComponent<E_Archer>().Health - AttackDamage;
-                        Debug.Log("Successful Attack");
-                    }
-                    else
-                    {
-                        AttackTarget = null;
-                    }
-                }
-                else if (AttackTarget.GetComponent<E_Pikeman>() != null)
-                {
-                    if (AttackTarget.GetComponent<E_Pikeman>().Health > 0)
-                    {
-                        AttackTarget.GetComponent<E_Pikeman>().Health = AttackTarget.GetComponent<E_Pikeman>().Health - AttackDamage;
-                        Debug.Log("Successful Attack");
-                    }
-                    else
-                    {
-                        AttackTarget = null;
-                    }
-                }
-                else if (AttackTarget.GetComponent<E_Wizard>() != null)
-                {
-                    if (AttackTarget.GetComponent<E_Wizard>().Health > 0)
-                    {
-                        AttackTarget.GetComponent<E_Wizard>().Health = AttackTarget.GetComponent<E_Wizard>().Health - AttackDamage;
-                        Debug.Log("Successful Attack");
-                    }
-                    else
-                    {
-                        AttackTarget = null;
-                    }
-                }
+                EnemyClassScript().Health = EnemyClassScript().Health - AttackDamage;
+                Debug.Log("Successful attack");
             }
-            // Else the attacker is an enemy unit
             else
             {
-                // Checks which kind of script is on the target unit based on its class
-                if (AttackTarget.GetComponent<F_Knight>() != null)
-                {
-                    if (AttackTarget.GetComponent<F_Knight>().Health > 0)
-                    {
-                        AttackTarget.GetComponent<F_Knight>().Health = AttackTarget.GetComponent<F_Knight>().Health - AttackDamage;
-                        Debug.Log("Successful Attack");
-                    }
-                    else
-                    {
-                        AttackTarget = null;
-                    }
-                }
-                else if (AttackTarget.GetComponent<F_Archer>() != null)
-                {
-                    if (AttackTarget.GetComponent<F_Archer>().Health > 0)
-                    {
-                        AttackTarget.GetComponent<F_Archer>().Health = AttackTarget.GetComponent<F_Archer>().Health - AttackDamage;
-                        Debug.Log("Successful Attack");
-                    }
-                    else
-                    {
-                        AttackTarget = null;
-                    }
-                }
-                else if (AttackTarget.GetComponent<F_Pikeman>() != null)
-                {
-                    if (AttackTarget.GetComponent<F_Pikeman>().Health > 0)
-                    {
-                        AttackTarget.GetComponent<F_Pikeman>().Health = AttackTarget.GetComponent<F_Pikeman>().Health - AttackDamage;
-                        Debug.Log("Successful Attack");
-                    }
-                    else
-                    {
-                        AttackTarget = null;
-                    }
-                }
-                else if (AttackTarget.GetComponent<F_Wizard>() != null)
-                {
-                    if (AttackTarget.GetComponent<F_Wizard>().Health > 0)
-                    {
-                        AttackTarget.GetComponent<F_Wizard>().Health = AttackTarget.GetComponent<F_Wizard>().Health - AttackDamage;
-                        Debug.Log("Successful Attack");
-                    }
-                    else
-                    {
-                        AttackTarget = null;
-                    }
-                }
+                EnemyClassScript().Health = EnemyClassScript().Health - AttackDamage;
+                Debug.Log("Successful attack");
+                AttackTarget = null;
             }
         }
     }

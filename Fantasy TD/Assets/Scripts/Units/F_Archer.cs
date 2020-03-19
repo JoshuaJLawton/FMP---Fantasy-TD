@@ -7,7 +7,6 @@ public class F_Archer : Archer
 {
     public GameObject MainCam;
     private Camera Cam;
-    public NavMeshAgent agent;
 
     // Start is called before the first frame update
     void Start()
@@ -18,17 +17,19 @@ public class F_Archer : Archer
         Cam = MainCam.GetComponent<Camera>();
 
         agent = this.gameObject.GetComponent<NavMeshAgent>();
-
     }
 
     // Update is called once per frame
     void Update()
     {
+        IsAlive();
         IsAttacking();
-        MoveUnit();
+        //MoveUnit();
+        HealUnit(MaxHealth);
     }
 
-    #region Original
+    #region Attacking
+
     bool IsRecharging = false;
 
     void IsAttacking()
@@ -44,6 +45,7 @@ public class F_Archer : Archer
             else
             {
                 agent.isStopped = true;
+                FaceEnemy();
                 if (!IsRecharging)
                 {
                     StartCoroutine(AttackRoutine());
@@ -60,13 +62,18 @@ public class F_Archer : Archer
         IsRecharging = false;
     }
 
+    #endregion
+
+    /*
+
+    #region Movement
+
     void MoveUnit()
     {
         if (this.gameObject == GM.CurrentUnit)
         {
             if (Input.GetMouseButtonDown(0))
             {
-                Debug.Log("Mouse Clicked");
                 Ray ray = Cam.ScreenPointToRay(Input.mousePosition);
                 RaycastHit Hit;
 
@@ -88,19 +95,24 @@ public class F_Archer : Archer
 
     #endregion
 
-    #region New
+    */
 
-    void SetMovementLocation()
+    #region Collisions
+
+    private void OnTriggerExit(Collider other)
     {
-
-    }
-
-    void SetAttackTarget()
-    {
-
+        switch (other.gameObject.name)
+        {
+            // If the unit has entered the Apothecary Guild
+            case "Apothecary Guild":
+                IsBeingHealed = true;
+                break;
+            // If the unit has exited the Apothecary Guild
+            case "Exit":
+                IsBeingHealed = false;
+                break;
+        }
     }
 
     #endregion
-
 }
-

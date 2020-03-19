@@ -11,6 +11,9 @@ public class GameManager : MonoBehaviour
     public GameObject PikemanPrefab;
 
     public GameObject CurrentUnit;
+    public Unit CurrentUnitScript;
+
+    public GameObject Apothecary;
 
     // Start is called before the first frame update
     void Start()
@@ -21,28 +24,13 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //SelectUnit();
         Click();
-    }
 
-    // When a unit is clicked, it will be set as the selected unit for the player
-    /*void SelectUnit()
-    {
-        if (Input.GetMouseButtonDown(0))
+        if (CurrentUnit != null)
         {
-            RaycastHit ObjectInfo = new RaycastHit();
-            bool hit = Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out ObjectInfo);
-
-            if (hit)
-            {
-                if (ObjectInfo.transform.gameObject.tag == "Player")
-                {
-                    Debug.Log("Current Unit is " + ObjectInfo.transform.gameObject.name);
-                    CurrentUnit = ObjectInfo.transform.gameObject;
-                }
-            }
-        }
-    }*/
+            CurrentUnitScript = GetClassScript();
+        }    
+    }
 
     void Click()
     {
@@ -65,35 +53,20 @@ public class GameManager : MonoBehaviour
                     case "Enemy":
                         if (CurrentUnit != null)
                         {
-                            // Checks which kind of script is on the current unit based on its class
-                            if (CurrentUnit.GetComponent<F_Knight>() != null)
-                            {
-                                CurrentUnit.GetComponent<F_Knight>().AttackTarget = ObjectInfo.transform.gameObject;
-                            }
-                            else if (CurrentUnit.GetComponent<F_Archer>() != null)
-                            {
-                                CurrentUnit.GetComponent<F_Archer>().AttackTarget = ObjectInfo.transform.gameObject;
-                            }
-                            else if (CurrentUnit.GetComponent<F_Pikeman>() != null)
-                            {
-                                CurrentUnit.GetComponent<F_Pikeman>().AttackTarget = ObjectInfo.transform.gameObject;
-                            }
-                            else if (CurrentUnit.GetComponent<F_Wizard>() != null)
-                            {
-                                CurrentUnit.GetComponent<F_Wizard>().AttackTarget = ObjectInfo.transform.gameObject;
-                            }
-                        }
-                        
+                            CurrentUnitScript.AttackTarget = ObjectInfo.transform.gameObject;
+                            Debug.Log("Set " + CurrentUnit + "'s target to " + CurrentUnitScript.AttackTarget);
+                        }                        
                         break;
 
                     case "Barracks":
                         break;
 
-                    case "Apothecary":
-                        break;
-
                     case "Ground":
-
+                        CurrentUnitScript.agent.isStopped = false;
+                        CurrentUnitScript.AttackTarget = null;
+                        // Move the Unit
+                        CurrentUnitScript.agent.SetDestination(ObjectInfo.point);
+                        Debug.Log("Move " + CurrentUnit.gameObject + " to " + ObjectInfo.point);
                         break;
 
                     case "Spawn Gate":
@@ -105,6 +78,31 @@ public class GameManager : MonoBehaviour
                         break;
                 }
             }
+        }
+    }
+
+    // Gets the kind of script on the current unit based on its class
+    public Unit GetClassScript()
+    {
+        if (CurrentUnit.GetComponent<F_Knight>() != null)
+        {
+            return CurrentUnit.GetComponent<F_Knight>();
+        }
+        else if (CurrentUnit.GetComponent<F_Archer>() != null)
+        {
+            return CurrentUnit.GetComponent<F_Archer>();
+        }
+        else if (CurrentUnit.GetComponent<F_Pikeman>() != null)
+        {
+            return CurrentUnit.GetComponent<F_Pikeman>();
+        }
+        else if (CurrentUnit.GetComponent<F_Wizard>() != null)
+        {
+            return CurrentUnit.GetComponent<F_Wizard>();
+        }
+        else
+        {
+            return null;
         }
     }
 }

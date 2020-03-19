@@ -7,7 +7,6 @@ public class F_Pikeman : Pikeman
 {
     public GameObject MainCam;
     private Camera Cam;
-    public NavMeshAgent agent;
 
     // Start is called before the first frame update
     void Start()
@@ -18,17 +17,19 @@ public class F_Pikeman : Pikeman
         Cam = MainCam.GetComponent<Camera>();
 
         agent = this.gameObject.GetComponent<NavMeshAgent>();
-
     }
 
     // Update is called once per frame
     void Update()
     {
+        IsAlive();
         IsAttacking();
-        MoveUnit();
+        //MoveUnit();
+        HealUnit(MaxHealth);
     }
 
-    #region Original
+    #region Attacking
+
     bool IsRecharging = false;
 
     void IsAttacking()
@@ -43,7 +44,8 @@ public class F_Pikeman : Pikeman
             }
             else
             {
-                agent.isStopped = true;
+                //agent.isStopped = true;
+                FaceEnemy();
                 if (!IsRecharging)
                 {
                     StartCoroutine(AttackRoutine());
@@ -60,13 +62,18 @@ public class F_Pikeman : Pikeman
         IsRecharging = false;
     }
 
+    #endregion
+
+    /*
+
+    #region Movement
+
     void MoveUnit()
     {
         if (this.gameObject == GM.CurrentUnit)
         {
             if (Input.GetMouseButtonDown(0))
             {
-                Debug.Log("Mouse Clicked");
                 Ray ray = Cam.ScreenPointToRay(Input.mousePosition);
                 RaycastHit Hit;
 
@@ -79,28 +86,31 @@ public class F_Pikeman : Pikeman
                         AttackTarget = null;
                         // Move the Unit
                         agent.SetDestination(Hit.point);
-
+                        Debug.Log("Move " + this.gameObject + " to " + Hit.point);
                     }
                 }
             }
         }
     }
 
-    #endregion
+    #endregion */
 
-    #region New
+    #region Collisions
 
-    void SetMovementLocation()
+    private void OnTriggerExit(Collider other)
     {
-
+        switch (other.gameObject.name)
+        {
+            // If the unit has entered the Apothecary Guild
+            case "Apothecary Guild":
+                IsBeingHealed = true;
+                break;
+            // If the unit has exited the Apothecary Guild
+            case "Exit":
+                IsBeingHealed = false;
+                break;
+        }
     }
 
-    void SetAttackTarget()
-    {
-
-    }
-
     #endregion
-
 }
-
