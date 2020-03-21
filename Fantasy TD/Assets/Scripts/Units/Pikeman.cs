@@ -12,7 +12,7 @@ public class Pikeman : Unit
         GM = Gm.GetComponent<GameManager>();
 
         // Sets the Knight's class
-        UnitClass = GetUnitClass();
+        UnitClass = GetUnitClass(this.gameObject);
         // Pikeman has high health
         MaxHealth = 75;
         Health = 75;
@@ -29,26 +29,16 @@ public class Pikeman : Unit
     {
         Debug.Log("Attack Initiated");
 
-        // Checks to see if the enemy is a pikeman (Pikemen deal back 20% of all close range damage taken)
-        if (AttackTarget.GetComponent<F_Pikeman>() != null || AttackTarget.GetComponent<E_Pikeman>() != null)
-        {
-            UnitClass.Health = UnitClass.Health - UnitClass.AttackDamage * 0.2f;
-        }
-
         if (AttackTarget != null)
         {
-            // If the enemy will survive the next attack
-            if (EnemyClassScript().Health > AttackDamage)
+            // Checks to see if the enemy is a pikeman (Pikemen deal back 20% of all close range damage taken)
+            if (AttackTarget.GetComponent<F_Pikeman>() != null || AttackTarget.GetComponent<E_Pikeman>() != null)
             {
-                EnemyClassScript().Health = EnemyClassScript().Health - AttackDamage;
-                Debug.Log("Successful attack");
+                UnitClass.Health = UnitClass.Health - UnitClass.AttackDamage * 0.2f;
             }
-            else
-            {
-                EnemyClassScript().Health = EnemyClassScript().Health - AttackDamage;
-                Debug.Log("Successful attack");
-                AttackTarget = null;
-            }
+
+            GetUnitClass(AttackTarget).Health = GetUnitClass(AttackTarget).Health - AttackDamage;
+            Debug.Log("Successful attack");
         }
     }
 }

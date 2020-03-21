@@ -30,7 +30,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1518536464609515063}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &1543477559577758173
 MeshFilter:
@@ -108,7 +108,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1518536464609515063}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &1542614793177136153
 MeshFilter:
@@ -186,7 +186,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1518536464609515063}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &1543153801970683701
 MeshFilter:
@@ -267,6 +267,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 10}
   m_LocalScale: {x: 1, y: 1, z: -1}
   m_Children:
+  - {fileID: 9196280311376264222}
   - {fileID: 1518797848713311107}
   - {fileID: 1516712761840414379}
   - {fileID: 1518786525541451711}
@@ -385,6 +386,46 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Gm: {fileID: 0}
   GM: {fileID: 0}
-  Health: 0
-  MainCam: {fileID: 0}
   agent: {fileID: 0}
+  AttackTarget: {fileID: 0}
+  MoveLocationTarget: {x: 0, y: 0, z: 0}
+  UnitClass: {fileID: 0}
+  MaxHealth: 0
+  Health: 0
+  AttackDamage: 0
+  Range: 0
+  AttackSpeed: 0
+  IsBeingHealed: 0
+  ArrowPrefab: {fileID: 2023388720791692819, guid: 970070ecc8e720b4db63b7630cb11cb8,
+    type: 3}
+  MainCam: {fileID: 0}
+--- !u!1 &4902567813701462248
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9196280311376264222}
+  m_Layer: 0
+  m_Name: Arrow Spawn Point
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &9196280311376264222
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4902567813701462248}
+  m_LocalRotation: {x: 0.5, y: -0.5, z: -0.5, w: 0.5}
+  m_LocalPosition: {x: -1.0779872, y: 1.7107136, z: -1.8500004}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1518536464609515063}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: -90, z: -90}

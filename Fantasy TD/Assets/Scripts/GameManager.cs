@@ -62,11 +62,14 @@ public class GameManager : MonoBehaviour
                         break;
 
                     case "Ground":
-                        CurrentUnitScript.agent.isStopped = false;
-                        CurrentUnitScript.AttackTarget = null;
-                        // Move the Unit
-                        CurrentUnitScript.agent.SetDestination(ObjectInfo.point);
-                        Debug.Log("Move " + CurrentUnit.gameObject + " to " + ObjectInfo.point);
+                        if (CurrentUnit != null)
+                        {
+                            CurrentUnitScript.agent.isStopped = false;
+                            CurrentUnitScript.AttackTarget = null;
+                            // Move the Unit
+                            CurrentUnitScript.agent.SetDestination(ObjectInfo.point);
+                            Debug.Log("Move " + CurrentUnit.gameObject + " to " + ObjectInfo.point);
+                        }
                         break;
 
                     case "Spawn Gate":

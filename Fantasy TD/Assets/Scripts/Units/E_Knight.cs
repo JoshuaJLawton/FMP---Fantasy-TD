@@ -8,11 +8,16 @@ public class E_Knight : Knight
     void Start()
     {
         InitiateKnight();
+
+        AIBehaviour = new StateMachine();
+        AIBehaviour.ChangeState(new LocateTarget(this.gameObject, this));
     }
 
     // Update is called once per frame
     void Update()
     {
         IsAlive();
+
+        this.AIBehaviour.ExecuteStateUpdate();
     }
 }

@@ -33,11 +33,8 @@ public class Unit : MonoBehaviour
     // Whether the unit is being healed by the apothecary
     public bool IsBeingHealed;
 
-    // Finds location
-    public void FindLocation()
-    {
-        
-    }
+    // Holds the state machine which will control the AI's behaviour
+    public StateMachine AIBehaviour;
 
     // Moves the unit to the target location
     public Vector3 MoveTo(Vector3 MoveLocationTarget)
@@ -61,69 +58,68 @@ public class Unit : MonoBehaviour
     {
         if (this.Health <= 0)
         {
+            // Holds all opposition units 
+            GameObject[] OppositionUnits;
+
+            // Determines whether the dying unit is a Player or Enemy unit and gets stores all opposition units in an array
+            if (this.gameObject.tag == "Player")
+            {
+                OppositionUnits = GameObject.FindGameObjectsWithTag("Enemy");
+            }
+            else
+            {
+                OppositionUnits = GameObject.FindGameObjectsWithTag("Player");
+            }
+
+            // Checks each opposition unit and clears their attack target if they are targeting this unit
+            foreach (GameObject Unit in OppositionUnits)
+            {
+                // If the opposition unit is targeting this unit
+                if (GetUnitClass(Unit).AttackTarget = this.gameObject)
+                {
+                    // Clears the AttackTarget
+                    GetUnitClass(Unit).AttackTarget = null;
+                }
+            }
+
             Destroy(this.gameObject);
         }
     }
 
-    // Checks which kind of script is on the attack target based on its class
-    public Unit EnemyClassScript()
+    // Checks which kind of script is on the a particular unit
+    public Unit GetUnitClass(GameObject Unit)
     {
-        if (AttackTarget.GetComponent<E_Knight>() != null)
+        if (Unit.GetComponent<E_Knight>() != null)
         {
-            return AttackTarget.GetComponent<E_Knight>();
+            return Unit.GetComponent<E_Knight>();
         }
-        else if (AttackTarget.GetComponent<E_Archer>() != null)
+        else if (Unit.GetComponent<E_Archer>() != null)
         {
-            return AttackTarget.GetComponent<E_Archer>();
+            return Unit.GetComponent<E_Archer>();
         }
-        else if (AttackTarget.GetComponent<E_Pikeman>() != null)
+        else if (Unit.GetComponent<E_Pikeman>() != null)
         {
-            return AttackTarget.GetComponent<E_Pikeman>();
+            return Unit.GetComponent<E_Pikeman>();
         }
-        else if (AttackTarget.GetComponent<E_Wizard>() != null)
+        else if (Unit.GetComponent<E_Wizard>() != null)
         {
-            return AttackTarget.GetComponent<E_Wizard>();
+            return Unit.GetComponent<E_Wizard>();
         }
-        else if (AttackTarget.GetComponent<F_Knight>() != null)
+        else if (Unit.GetComponent<F_Knight>() != null)
         {
-            return AttackTarget.GetComponent<F_Knight>();
+            return Unit.GetComponent<F_Knight>();
         }
-        else if (AttackTarget.GetComponent<F_Archer>() != null)
+        else if (Unit.GetComponent<F_Archer>() != null)
         {
-            return AttackTarget.GetComponent<F_Archer>();
+            return Unit.GetComponent<F_Archer>();
         }
-        else if (AttackTarget.GetComponent<F_Pikeman>() != null)
+        else if (Unit.GetComponent<F_Pikeman>() != null)
         {
-            return AttackTarget.GetComponent<F_Pikeman>();
+            return Unit.GetComponent<F_Pikeman>();
         }
-        else if (AttackTarget.GetComponent<F_Wizard>() != null)
+        else if (Unit.GetComponent<F_Wizard>() != null)
         {
-            return AttackTarget.GetComponent<F_Wizard>();
-        }
-        else
-        {
-            return null;
-        }
-    }
-
-    // Gets the kind of script on the current unit based on its class
-    public Unit GetUnitClass()
-    {
-        if (this.GetComponent<F_Knight>() != null)
-        {
-            return this.GetComponent<F_Knight>();
-        }
-        else if (this.GetComponent<F_Archer>() != null)
-        {
-            return this.GetComponent<F_Archer>();
-        }
-        else if (this.GetComponent<F_Pikeman>() != null)
-        {
-            return this.GetComponent<F_Pikeman>();
-        }
-        else if (this.GetComponent<F_Wizard>() != null)
-        {
-            return this.GetComponent<F_Wizard>();
+            return Unit.GetComponent<F_Wizard>();
         }
         else
         {
@@ -143,4 +139,23 @@ public class Unit : MonoBehaviour
             UnitClass.Health = MaxHealth;
         }
     }
+
+    #region AI Functions
+
+    void GetEnemiesInRange()
+    {
+
+    }
+
+    void LocateTarget()
+    {
+
+    }
+
+    void MoveUnit()
+    {
+
+    }
+
+    #endregion
 }

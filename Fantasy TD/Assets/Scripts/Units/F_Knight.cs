@@ -64,37 +64,6 @@ public class F_Knight : Knight
 
     #endregion
 
-    #region Movement
-
-    void MoveUnit()
-    {
-
-        /*
-        if (this.gameObject == GM.CurrentUnit)
-        {
-            if (Input.GetMouseButtonDown(0))
-            {
-                Ray ray = Cam.ScreenPointToRay(Input.mousePosition);
-                RaycastHit Hit;
-
-                if (Physics.Raycast(ray, out Hit))
-                {
-                    if (Hit.transform.gameObject.tag == "Ground")
-                    {
-                        agent.isStopped = false;
-                        // Nullifies the Attack Target
-                        AttackTarget = null;
-                        // Move the Unit
-                        agent.SetDestination(Hit.point);
-                        Debug.Log("Move " + this.gameObject + " to " + Hit.point);
-                    }
-                }
-            }
-        }  */ 
-    }
-
-    #endregion
-
     #region Collisions
 
     private void OnTriggerExit(Collider other)

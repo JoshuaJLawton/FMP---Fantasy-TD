@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class Wizard : Unit
 {
+    // The prefab of the spells which will be cast
+    public GameObject SpellPrefab;
+
     // Initiates the Wizard class
     public void InitiateWizard()
     {
@@ -12,7 +15,7 @@ public class Wizard : Unit
         GM = Gm.GetComponent<GameManager>();
 
         // Sets the Knight's class
-        UnitClass = GetUnitClass();
+        UnitClass = GetUnitClass(this.gameObject);
         // Wizard has low health
         MaxHealth = 25;
         Health = 25;
@@ -21,27 +24,20 @@ public class Wizard : Unit
         // Wizard has medium range
         Range = 25;
         // Wizard has medium attack speed
-        AttackSpeed = 3.5f; // 5 Seconds
+        AttackSpeed = 3.5f; // 3.5 Seconds
     }
 
     // Executes the Wizard's attack routine
     public void CastSpell()
     {
+        Debug.Log("Attack Initiated");
+
         if (AttackTarget != null)
         {
-            Debug.Log("Attack Initiated");
-            // If the enemy will survive the next attack
-            if (EnemyClassScript().Health > AttackDamage)
-            {
-                EnemyClassScript().Health = EnemyClassScript().Health - AttackDamage;
-                Debug.Log("Successful attack");
-            }
-            else
-            {
-                EnemyClassScript().Health = EnemyClassScript().Health - AttackDamage;
-                Debug.Log("Successful attack");
-                AttackTarget = null;
-            }
+            GameObject Arrow = Instantiate(SpellPrefab, this.transform.Find("Spell Spawn Point").transform.position, this.transform.Find("Spell Spawn Point").transform.rotation);
+            Arrow.GetComponent<Projectile>().Attacker = this.gameObject;
+            Arrow.GetComponent<Projectile>().Damage = this.AttackDamage;
+            Arrow.GetComponent<Projectile>().Speed = 50;
         }
     }
 }

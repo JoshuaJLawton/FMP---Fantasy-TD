@@ -112,6 +112,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: -1}
   m_Children:
   - {fileID: 489803036712818180}
+  - {fileID: 1734063426178112473}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -225,3 +226,47 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57cbd3d96d8e92e469722616fdeecbc3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Gm: {fileID: 0}
+  GM: {fileID: 0}
+  agent: {fileID: 0}
+  AttackTarget: {fileID: 0}
+  MoveLocationTarget: {x: 0, y: 0, z: 0}
+  UnitClass: {fileID: 0}
+  MaxHealth: 0
+  Health: 0
+  AttackDamage: 0
+  Range: 0
+  AttackSpeed: 0
+  IsBeingHealed: 0
+  SpellPrefab: {fileID: 5969886762157085863, guid: dc2f4a89a018e3d4f8b8802f2994e639,
+    type: 3}
+--- !u!1 &3040890936958596300
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1734063426178112473}
+  m_Layer: 0
+  m_Name: Spell Spawn Point
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1734063426178112473
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3040890936958596300}
+  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 0, y: 1.5, z: -2}
+  m_LocalScale: {x: 1, y: 1, z: -1}
+  m_Children: []
+  m_Father: {fileID: 491583890487610904}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}

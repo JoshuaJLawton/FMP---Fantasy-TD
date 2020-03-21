@@ -8,7 +8,7 @@ public class SpawnGate : MonoBehaviour
 
     void Start()
     {
-        
+       
     }
 
     private void OnTriggerEnter(Collider other)

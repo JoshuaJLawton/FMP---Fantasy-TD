@@ -36,6 +36,9 @@ public class F_Wizard : Wizard
     {
         if (AttackTarget != null)
         {
+            // Restarts the agent after stopping
+            agent.isStopped = false;
+
             // If the unit is too far away to attack
             if (Vector3.Distance(this.gameObject.transform.position, AttackTarget.transform.position) > Range)
             {
@@ -63,36 +66,6 @@ public class F_Wizard : Wizard
     }
 
     #endregion
-
-    /*
-    #region Movement
-
-    void MoveUnit()
-    {
-        if (this.gameObject == GM.CurrentUnit)
-        {
-            if (Input.GetMouseButtonDown(0))
-            {
-                Ray ray = Cam.ScreenPointToRay(Input.mousePosition);
-                RaycastHit Hit;
-
-                if (Physics.Raycast(ray, out Hit))
-                {
-                    if (Hit.transform.gameObject.tag == "Ground")
-                    {
-                        agent.isStopped = false;
-                        // Nullifies the Attack Target
-                        AttackTarget = null;
-                        // Move the Unit
-                        agent.SetDestination(Hit.point);
-
-                    }
-                }
-            }
-        }
-    }
-
-    #endregion */
 
     #region Collisions
 
