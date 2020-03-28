@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class Pikeman : Unit
 {
@@ -22,6 +23,8 @@ public class Pikeman : Unit
         Range = 3;
         // Pikeman has low attack speed
         AttackSpeed = 3.5f; // 2.5 Seconds
+
+        agent = this.gameObject.GetComponent<NavMeshAgent>();
     }
 
     // Executes the Pikeman's attack routine

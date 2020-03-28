@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class Knight : Unit
 {
@@ -22,6 +23,8 @@ public class Knight : Unit
         Range = 3;
         // Knight has medium attack speed
         AttackSpeed = 1; // 1 Second
+
+        agent = this.gameObject.GetComponent<NavMeshAgent>();
     }
 
     // Executes the Knight's attack routine

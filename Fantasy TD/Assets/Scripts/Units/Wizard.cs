@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class Wizard : Unit
 {
@@ -25,6 +26,8 @@ public class Wizard : Unit
         Range = 25;
         // Wizard has medium attack speed
         AttackSpeed = 3.5f; // 3.5 Seconds
+
+        agent = this.gameObject.GetComponent<NavMeshAgent>();
     }
 
     // Executes the Wizard's attack routine

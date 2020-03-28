@@ -127,6 +127,7 @@ public class Unit : MonoBehaviour
         }
     }
 
+    // Heals the unit over time
     public void HealUnit(float MaxHealth)
     {
         if (IsBeingHealed && Health < MaxHealth)
@@ -142,20 +143,145 @@ public class Unit : MonoBehaviour
 
     #region AI Functions
 
-    void GetEnemiesInRange()
+    public bool CanAttack()
+    {
+        RaycastHit ObjectInfo = new RaycastHit();
+
+        Debug.DrawRay(this.transform.position, this.transform.forward * Range, Color.red);
+
+        if (Vector3.Distance(this.gameObject.transform.position, AttackTarget.transform.position) < Range)
+        {
+            Debug.Log("Check 1");
+            if (Physics.Raycast(this.transform.position, this.transform.forward, out ObjectInfo, Range))
+            {
+                Debug.Log("Check 2");
+                if (ObjectInfo.transform.gameObject == AttackTarget)
+                {
+                    Debug.Log("Check 3");
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+            
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    // Gets a unit threat;
+    public GameObject Threat()
+    {
+        GameObject ClosestThreat = null;
+        GameObject[] Units = GameObject.FindGameObjectsWithTag("Player");
+
+        // If there is at least one threat (enemy unit)
+        if (Units.Length > 0)
+        {
+            // Checks every threat
+            foreach (GameObject Unit in Units)
+            {
+                Unit Class = GetUnitClass(Unit);
+
+                // If the threat is targeting this unit
+                if (Class.AttackTarget == this.gameObject)
+                {
+                    // If the threat is within threatening distance
+                    if (Vector3.Distance(this.gameObject.transform.position, Unit.transform.position) > 50)
+                    {
+                        // If this is the first threat in range
+                        if (ClosestThreat == null)
+                        {
+                            ClosestThreat = Unit;
+                        }
+                        // If the current closest threat is further away than the unit being looked at
+                        else if (Vector3.Distance(this.gameObject.transform.position, ClosestThreat.transform.position) > Vector3.Distance(this.gameObject.transform.position, Unit.transform.position))
+                        {
+                            ClosestThreat = Unit;
+                        }
+                    }
+                }
+            }
+
+            return ClosestThreat;
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    // Gets the closest building to the unit
+    public GameObject TargetBuilding()
+    {
+        GameObject ClosestBuilding = null;
+        string BuildingType = null;
+        GameObject[] Buildings;
+
+        // Runs this code 4 times
+        for (int x = 0; x < 4; x++)
+        {
+            // Changes the tag being assessed
+            switch (x)
+            {
+                case 0:
+                    BuildingType = "Income";
+                    break;
+                case 1:
+                    BuildingType = "Apothecary";
+                    break;
+                case 2:
+                    BuildingType = "Barracks";
+                    break;
+                case 3:
+                    BuildingType = "Main Castle";
+                    break;
+            }
+
+            // Gets all the buildings under tag
+            Buildings = GameObject.FindGameObjectsWithTag(BuildingType);
+
+            // Checks all buildings of that tag
+            foreach (GameObject Building in Buildings)
+            {
+                // If there is at least one building in the array
+                if (Buildings.Length > 0)
+                {
+                    // If this is the first threat in range
+                    if (ClosestBuilding == null)
+                    {
+                        ClosestBuilding = Building;
+                    }
+                    // If the current closest building is further away than the building being looked at
+                    else if (Vector3.Distance(this.gameObject.transform.position, ClosestBuilding.transform.position) > Vector3.Distance(this.gameObject.transform.position, Building.transform.position))
+                    {
+                        ClosestBuilding = Building;
+                    }
+                }
+            }
+        }
+
+        return ClosestBuilding;
+    }
+
+    public void GetEnemiesInRange()
     {
 
     }
 
-    void LocateTarget()
+    public void LocateTarget()
     {
 
     }
 
-    void MoveUnit()
-    {
-
-    }
 
     #endregion
 }

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class Archer : Unit
 {
@@ -25,6 +26,8 @@ public class Archer : Unit
         Range = 40;
         // Archer has low attack speed (Reload time)
         AttackSpeed = 5; // 5 Seconds
+
+        agent = this.gameObject.GetComponent<NavMeshAgent>();
     }
 
     // Executes the Archer's attack routine

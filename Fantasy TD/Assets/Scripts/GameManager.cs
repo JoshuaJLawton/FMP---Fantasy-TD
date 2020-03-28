@@ -13,6 +13,9 @@ public class GameManager : MonoBehaviour
     public GameObject CurrentUnit;
     public Unit CurrentUnitScript;
 
+    public bool BarracksSelected;
+    public GameObject SelectedBarracks;
+
     public GameObject Apothecary;
 
     // Start is called before the first frame update
@@ -29,7 +32,12 @@ public class GameManager : MonoBehaviour
         if (CurrentUnit != null)
         {
             CurrentUnitScript = GetClassScript();
-        }    
+        }
+
+        if (SelectedBarracks != null)
+        {
+            SpawnUnits(SelectedBarracks);
+        }   
     }
 
     void Click()
@@ -47,6 +55,8 @@ public class GameManager : MonoBehaviour
                     case "Player":
                         Debug.Log("Current Unit is " + ObjectInfo.transform.gameObject.name);
                         CurrentUnit = ObjectInfo.transform.gameObject;
+
+                        BarracksSelected = false;
                         break;
 
                     // Sets the enemy unit as the current unit's attack target
@@ -55,10 +65,17 @@ public class GameManager : MonoBehaviour
                         {
                             CurrentUnitScript.AttackTarget = ObjectInfo.transform.gameObject;
                             Debug.Log("Set " + CurrentUnit + "'s target to " + CurrentUnitScript.AttackTarget);
-                        }                        
+                        }
+
+                        BarracksSelected = false;
                         break;
 
                     case "Barracks":
+                        Debug.Log("BarracksClicked");
+                        BarracksSelected = true;
+                        CurrentUnit = null;
+
+                        SelectedBarracks = ObjectInfo.transform.gameObject;
                         break;
 
                     case "Ground":
@@ -70,6 +87,8 @@ public class GameManager : MonoBehaviour
                             CurrentUnitScript.agent.SetDestination(ObjectInfo.point);
                             Debug.Log("Move " + CurrentUnit.gameObject + " to " + ObjectInfo.point);
                         }
+
+                        BarracksSelected = false;
                         break;
 
                     case "Spawn Gate":
@@ -78,11 +97,40 @@ public class GameManager : MonoBehaviour
                             Debug.Log("Spawn Gate");
                             Instantiate(KnightPrefab, ObjectInfo.transform.Find("Unit Spawn Point").transform.position, ObjectInfo.transform.Find("Unit Spawn Point").transform.rotation);
                         }
+
+                        BarracksSelected = false;
                         break;
                 }
             }
         }
     }
+
+    void SpawnUnits(GameObject Barracks)
+    {
+        if (BarracksSelected)
+        {
+            if (SelectedBarracks.transform.gameObject.GetComponent<Spawner>().UnitOnGate == false)
+            {
+                if (Input.GetKeyDown(KeyCode.Alpha1))
+                {
+                    Instantiate(KnightPrefab, SelectedBarracks.transform.Find("Unit Spawn Point").transform.position, SelectedBarracks.transform.Find("Unit Spawn Point").transform.rotation);
+                }
+                else if (Input.GetKeyDown(KeyCode.Alpha2))
+                {
+                    Instantiate(ArcherPrefab, SelectedBarracks.transform.Find("Unit Spawn Point").transform.position, SelectedBarracks.transform.Find("Unit Spawn Point").transform.rotation);
+                }
+                else if (Input.GetKeyDown(KeyCode.Alpha3))
+                {
+                    Instantiate(PikemanPrefab, SelectedBarracks.transform.Find("Unit Spawn Point").transform.position, SelectedBarracks.transform.Find("Unit Spawn Point").transform.rotation);
+                }
+                else if (Input.GetKeyDown(KeyCode.Alpha4))
+                {
+                    Instantiate(WizardPrefab, SelectedBarracks.transform.Find("Unit Spawn Point").transform.position, SelectedBarracks.transform.Find("Unit Spawn Point").transform.rotation);
+                }
+            }
+        }
+    }
+
 
     // Gets the kind of script on the current unit based on its class
     public Unit GetClassScript()

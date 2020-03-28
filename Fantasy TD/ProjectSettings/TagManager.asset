@@ -11,6 +11,7 @@ TagManager:
   - Barracks
   - Main Castle
   - Enemy
+  - Main Tower
   layers:
   - Default
   - TransparentFX
