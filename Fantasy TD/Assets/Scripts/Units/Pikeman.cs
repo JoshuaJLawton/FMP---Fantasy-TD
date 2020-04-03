@@ -27,6 +27,7 @@ public class Pikeman : Unit
         agent = this.gameObject.GetComponent<NavMeshAgent>();
     }
 
+    /*
     // Executes the Pikeman's attack routine
     public void Attack()
     {
@@ -44,4 +45,5 @@ public class Pikeman : Unit
             Debug.Log("Successful attack");
         }
     }
+    */
 }

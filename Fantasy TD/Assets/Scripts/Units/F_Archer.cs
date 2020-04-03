@@ -23,9 +23,18 @@ public class F_Archer : Archer
     void Update()
     {
         IsAlive();
-        IsAttacking();
+        //IsAttacking();
         //MoveUnit();
         HealUnit(MaxHealth);
+
+        if (CanAttack())
+        {
+            StartAttackRoutine();
+        }
+        else
+        {
+            agent.SetDestination(AttackTarget.transform.position);
+        }
     }
 
     #region Attacking
@@ -55,14 +64,6 @@ public class F_Archer : Archer
                 }
             }
         }
-    }
-
-    public IEnumerator AttackRoutine()
-    {
-        IsRecharging = true;
-        FireArrow();
-        yield return new WaitForSeconds(AttackSpeed);
-        IsRecharging = false;
     }
 
     #endregion

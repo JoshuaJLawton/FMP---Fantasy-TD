@@ -56,15 +56,6 @@ public class F_Wizard : Wizard
             }
         }
     }
-
-    public IEnumerator AttackRoutine()
-    {
-        IsRecharging = true;
-        CastSpell();
-        yield return new WaitForSeconds(AttackSpeed);
-        IsRecharging = false;
-    }
-
     #endregion
 
     #region Collisions

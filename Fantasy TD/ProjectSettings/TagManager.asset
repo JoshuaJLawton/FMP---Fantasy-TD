@@ -12,6 +12,7 @@ TagManager:
   - Main Castle
   - Enemy
   - Main Tower
+  - Gate
   layers:
   - Default
   - TransparentFX

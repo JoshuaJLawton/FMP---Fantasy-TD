@@ -26,9 +26,13 @@ public class Wizard : Unit
         Range = 25;
         // Wizard has medium attack speed
         AttackSpeed = 3.5f; // 3.5 Seconds
+        // Spells fly slower
+        ProjectileSpeed = 50;
 
         agent = this.gameObject.GetComponent<NavMeshAgent>();
     }
+
+    /*
 
     // Executes the Wizard's attack routine
     public void CastSpell()
@@ -43,4 +47,5 @@ public class Wizard : Unit
             Arrow.GetComponent<Projectile>().Speed = 50;
         }
     }
+    */
 }

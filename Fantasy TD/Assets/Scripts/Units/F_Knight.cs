@@ -24,7 +24,6 @@ public class F_Knight : Knight
     {
         IsAlive();
         IsAttacking();
-        // MoveUnit();
         HealUnit(MaxHealth);
     }
 
@@ -34,6 +33,16 @@ public class F_Knight : Knight
 
     void IsAttacking()
     {
+        if (CanAttack())
+        {
+            StartAttackRoutine();
+        }
+        else
+        {
+            agent.SetDestination(AttackTarget.transform.position);
+        }
+
+        /*
         if (AttackTarget != null)
         {
             // If the unit is too far away to attack
@@ -51,15 +60,7 @@ public class F_Knight : Knight
                     StartCoroutine(AttackRoutine());
                 }
             }
-        }
-    }
-
-    public IEnumerator AttackRoutine()
-    {
-        IsRecharging = true;
-        Attack();
-        yield return new WaitForSeconds(AttackSpeed);
-        IsRecharging = false;
+        }*/
     }
 
     #endregion

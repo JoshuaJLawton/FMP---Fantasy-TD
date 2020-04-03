@@ -6,11 +6,6 @@ public class SpawnGate : MonoBehaviour
 {
     public bool UnitOnGate;
 
-    void Start()
-    {
-       
-    }
-
     private void OnTriggerEnter(Collider other)
     {
         UnitOnGate = true;

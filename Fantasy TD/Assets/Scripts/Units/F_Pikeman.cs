@@ -54,14 +54,6 @@ public class F_Pikeman : Pikeman
         }
     }
 
-    public IEnumerator AttackRoutine()
-    {
-        IsRecharging = true;
-        Attack();
-        yield return new WaitForSeconds(AttackSpeed);
-        IsRecharging = false;
-    }
-
     #endregion
 
     #region Collisions

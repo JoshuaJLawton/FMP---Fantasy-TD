@@ -19,6 +19,7 @@ public class Projectile : MonoBehaviour
     void Start()
     {
         AttackerUnitClass = GetUnitClass(Attacker);
+        StartCoroutine(KillOverTime());
     }
 
     // Update is called once per frame
@@ -43,46 +44,11 @@ public class Projectile : MonoBehaviour
 
     }
 
-    // Gets the class script of the unit attacked 
-    /*public Unit GetClassScript(GameObject AttackedUnit)
+    IEnumerator KillOverTime()
     {
-        if (AttackedUnit.GetComponent<F_Knight>() != null)
-        {
-            return AttackedUnit.GetComponent<F_Knight>();
-        }
-        else if (AttackedUnit.GetComponent<F_Archer>() != null)
-        {
-            return AttackedUnit.GetComponent<F_Archer>();
-        }
-        else if (AttackedUnit.GetComponent<F_Pikeman>() != null)
-        {
-            return AttackedUnit.GetComponent<F_Pikeman>();
-        }
-        else if (AttackedUnit.GetComponent<F_Wizard>() != null)
-        {
-            return AttackedUnit.GetComponent<F_Wizard>();
-        }
-        else if (AttackedUnit.GetComponent<E_Knight>() != null)
-        {
-            return AttackedUnit.GetComponent<E_Knight>();
-        }
-        else if (AttackedUnit.GetComponent<E_Archer>() != null)
-        {
-            return AttackedUnit.GetComponent<E_Archer>();
-        }
-        else if (AttackedUnit.GetComponent<E_Pikeman>() != null)
-        {
-            return AttackedUnit.GetComponent<E_Pikeman>();
-        }
-        else if (AttackedUnit.GetComponent<E_Wizard>() != null)
-        {
-            return AttackedUnit.GetComponent<E_Wizard>();
-        }
-        else
-        {
-            return null;
-        }
-    }*/
+        yield return new WaitForSeconds(5);
+        Destroy(this.gameObject);
+    }
 
     // Checks which kind of script is on the a particular unit
     public Unit GetUnitClass(GameObject Unit)
@@ -127,17 +93,30 @@ public class Projectile : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        Debug.Log(other.gameObject + " hit");
+
         // Ignores the collision if it is with the unit initiating the attack or its teammates
         if (other.gameObject != Attacker && other.gameObject.tag != Attacker.tag)
         {
-            // Sets the class script of the unit attacked
-            HitUnitClass = GetUnitClass(other.gameObject);
-
-            if (HitUnitClass != null)
+            Debug.Log(other.gameObject + " hit");
+            // If the arrow was fired by an enemy and it hits a building
+            if (Attacker.tag == "Enemy" && other.gameObject.GetComponent<Building>() != null)
             {
-                HitUnitClass.Health -= Damage;
-                Debug.Log("Arrow hit " + other.gameObject + "for" + Damage + " damage");
+                Debug.Log("Building hit");
+                other.gameObject.GetComponent<Building>().Health -= Damage;
             }
+            else
+            {
+                // Sets the class script of the unit attacked
+                HitUnitClass = GetUnitClass(other.gameObject);
+
+                if (HitUnitClass != null)
+                {
+                    HitUnitClass.Health -= Damage;
+                    Debug.Log("Arrow hit " + other.gameObject + "for" + Damage + " damage");
+                }
+            }
+
             Destroy(this.gameObject);
         }
     }

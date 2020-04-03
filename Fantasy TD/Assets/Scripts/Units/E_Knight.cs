@@ -21,4 +21,23 @@ public class E_Knight : Knight
 
         this.AIBehaviour.ExecuteStateUpdate();
     }
+
+    #region Collisions
+
+    private void OnTriggerExit(Collider other)
+    {
+        switch (other.gameObject.name)
+        {
+            // If the unit has entered the Apothecary Guild
+            case "Gate Entry":
+                IsInCastle = true;
+                break;
+            // If the unit has exited the Apothecary Guild
+            case "Gate Exit":
+                IsInCastle = false;
+                break;
+        }
+    }
+
+    #endregion
 }

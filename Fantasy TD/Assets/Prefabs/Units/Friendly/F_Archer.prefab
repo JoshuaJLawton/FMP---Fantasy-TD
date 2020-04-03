@@ -395,9 +395,10 @@ MonoBehaviour:
   AttackDamage: 0
   Range: 0
   AttackSpeed: 0
-  IsBeingHealed: 0
-  ArrowPrefab: {fileID: 2023388720791692819, guid: 970070ecc8e720b4db63b7630cb11cb8,
+  ProjectilePrefab: {fileID: 2023388720791692819, guid: 970070ecc8e720b4db63b7630cb11cb8,
     type: 3}
+  IsBeingHealed: 0
+  AIBehaviour: {fileID: 0}
   MainCam: {fileID: 0}
 --- !u!1 &4902567813701462248
 GameObject:
@@ -409,7 +410,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9196280311376264222}
   m_Layer: 0
-  m_Name: Arrow Spawn Point
+  m_Name: Projectile Spawn Point
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

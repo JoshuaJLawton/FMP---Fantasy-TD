@@ -5,9 +5,6 @@ using UnityEngine.AI;
 
 public class Archer : Unit
 {
-    // The prefab of the arrows which will be fired
-    public GameObject ArrowPrefab;
-
     // Initiates the Archer class
     public void InitiateArcher()
     {
@@ -26,9 +23,13 @@ public class Archer : Unit
         Range = 40;
         // Archer has low attack speed (Reload time)
         AttackSpeed = 5; // 5 Seconds
+        // Arrows fly fast
+        ProjectileSpeed = 100;
 
         agent = this.gameObject.GetComponent<NavMeshAgent>();
     }
+
+    /*
 
     // Executes the Archer's attack routine
     public void FireArrow()
@@ -40,4 +41,5 @@ public class Archer : Unit
         Arrow.GetComponent<Projectile>().Damage = this.AttackDamage;
         Arrow.GetComponent<Projectile>().Speed = 100;
     }
+    */
 }

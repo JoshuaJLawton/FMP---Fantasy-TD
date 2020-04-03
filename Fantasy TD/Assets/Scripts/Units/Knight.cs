@@ -27,20 +27,29 @@ public class Knight : Unit
         agent = this.gameObject.GetComponent<NavMeshAgent>();
     }
 
+    /*
     // Executes the Knight's attack routine
     public void Attack()
     {
         Debug.Log("Attack Initiated");
         if (AttackTarget != null)
         {
-            // Checks to see if the enemy is a pikeman (Pikemen deal back 20% of all close range damage taken)
-            if (AttackTarget.GetComponent<F_Pikeman>() != null || AttackTarget.GetComponent<E_Pikeman>() != null)
+            // If the Attack Target is a building
+            if (AttackTarget.GetComponent<Building>() != null)
             {
-                UnitClass.Health = UnitClass.Health - UnitClass.AttackDamage * 0.2f;
+                AttackTarget.GetComponent<Building>().Health -= AttackDamage;
             }
+            else
+            {
+                // Checks to see if the enemy is a pikeman (Pikemen deal back 20% of all close range damage taken)
+                if (AttackTarget.GetComponent<F_Pikeman>() != null || AttackTarget.GetComponent<E_Pikeman>() != null)
+                {
+                    UnitClass.Health -= UnitClass.AttackDamage * 0.2f;
+                }
 
-            GetUnitClass(AttackTarget).Health -= AttackDamage;
-            Debug.Log("Successful attack");
+                GetUnitClass(AttackTarget).Health -= AttackDamage;
+            } 
         }      
     }
+    */
 }

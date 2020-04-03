@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 554268355882356846}
   m_Layer: 0
-  m_Name: Arrow Spawn Point
+  m_Name: Projectile Spawn Point
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -23,13 +23,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4841469219632627008}
-  m_LocalRotation: {x: 0, y: 0, z: -0, w: 1}
+  m_LocalRotation: {x: 0.5, y: -0.5, z: -0.5, w: 0.5}
   m_LocalPosition: {x: -1.077987, y: 1.710714, z: -1.85}
   m_LocalScale: {x: 1, y: 1, z: -1}
   m_Children: []
   m_Father: {fileID: 6074611033879956037}
   m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -90, z: -90}
 --- !u!1 &6071173978759410033
 GameObject:
   m_ObjectHideFlags: 0
@@ -44,6 +44,7 @@ GameObject:
   - component: {fileID: 5362365372673474747}
   - component: {fileID: 2930423498571373231}
   - component: {fileID: 6279968621705191681}
+  - component: {fileID: 1841982938107101549}
   - component: {fileID: -1730496478495020482}
   m_Layer: 0
   m_Name: E_Archer
@@ -168,6 +169,22 @@ NavMeshAgent:
   m_BaseOffset: -0.1
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!208 &1841982938107101549
+NavMeshObstacle:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6071173978759410033}
+  m_Enabled: 0
+  serializedVersion: 3
+  m_Shape: 0
+  m_Extents: {x: 1.5, y: 2, z: 1.5}
+  m_MoveThreshold: 0.1
+  m_Carve: 1
+  m_CarveOnlyStationary: 1
+  m_Center: {x: 0, y: 2, z: 0}
+  m_TimeToStationary: 0.5
 --- !u!114 &-1730496478495020482
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -191,9 +208,13 @@ MonoBehaviour:
   AttackDamage: 0
   Range: 0
   AttackSpeed: 0
-  IsBeingHealed: 0
-  ArrowPrefab: {fileID: 7109590357088234685, guid: cd38ca10b28ea8644a9d252ddea79079,
+  RechargingAttack: 0
+  ProjectilePrefab: {fileID: 7109590357088234685, guid: cd38ca10b28ea8644a9d252ddea79079,
     type: 3}
+  ProjectileSpeed: 0
+  IsBeingHealed: 0
+  IsInCastle: 0
+  AIBehaviour: {fileID: 0}
 --- !u!1 &6072048166297029869
 GameObject:
   m_ObjectHideFlags: 0

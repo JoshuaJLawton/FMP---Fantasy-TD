@@ -29,9 +29,20 @@ public class Unit : MonoBehaviour
     public float Range;
     // Holds the time between attacks
     public float AttackSpeed;
+    // If the Unit is recharging their attack
+    public bool RechargingAttack;
+
+
+    // Holds Arrow / Spell Prefab
+    public GameObject ProjectilePrefab;
+    // Holds Speed in which projectiles fly
+    public int ProjectileSpeed;
 
     // Whether the unit is being healed by the apothecary
     public bool IsBeingHealed;
+
+    // Whether the unit is within castle walls
+    public bool IsInCastle;
 
     // Holds the state machine which will control the AI's behaviour
     public StateMachine AIBehaviour;
@@ -49,42 +60,7 @@ public class Unit : MonoBehaviour
         }
     }
 
-    public void FaceEnemy()
-    {
-        transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(AttackTarget.transform.position - transform.position), 2.5f * Time.deltaTime);
-    }
-
-    public void IsAlive()
-    {
-        if (this.Health <= 0)
-        {
-            // Holds all opposition units 
-            GameObject[] OppositionUnits;
-
-            // Determines whether the dying unit is a Player or Enemy unit and gets stores all opposition units in an array
-            if (this.gameObject.tag == "Player")
-            {
-                OppositionUnits = GameObject.FindGameObjectsWithTag("Enemy");
-            }
-            else
-            {
-                OppositionUnits = GameObject.FindGameObjectsWithTag("Player");
-            }
-
-            // Checks each opposition unit and clears their attack target if they are targeting this unit
-            foreach (GameObject Unit in OppositionUnits)
-            {
-                // If the opposition unit is targeting this unit
-                if (GetUnitClass(Unit).AttackTarget = this.gameObject)
-                {
-                    // Clears the AttackTarget
-                    GetUnitClass(Unit).AttackTarget = null;
-                }
-            }
-
-            Destroy(this.gameObject);
-        }
-    }
+    #region Find / Initiate Functions
 
     // Checks which kind of script is on the a particular unit
     public Unit GetUnitClass(GameObject Unit)
@@ -127,6 +103,163 @@ public class Unit : MonoBehaviour
         }
     }
 
+
+
+
+
+    #endregion
+
+
+
+
+    #region Attacking Functions
+
+    public bool CanAttack()
+    {
+        //Debug.DrawRay(this.transform.position, this.transform.forward * Range, Color.red);
+        //Debug.DrawRay(this.transform.position, (AttackTarget.transform.position - this.transform.position).normalized * Range, Color.blue);
+
+
+        Vector3 THIS = new Vector3(this.transform.position.x, this.transform.position.y + 1, this.transform.position.z);
+        Vector3 TARGET = new Vector3(AttackTarget.transform.position.x, AttackTarget.transform.position.y + 1, AttackTarget.transform.position.z);
+        
+        RaycastHit ObjectInfo = new RaycastHit();
+        bool hit = Physics.Raycast(THIS, (TARGET - THIS).normalized * Range, out ObjectInfo);
+        Debug.DrawRay(THIS, (TARGET - THIS).normalized * Range, Color.red);
+
+        // If the attack target is in attack range
+        if (Vector3.Distance(THIS, TARGET) < Range)
+        {
+            // If a raycast pointing at the attack target hits
+            if (hit)
+            {
+                if (ObjectInfo.transform.gameObject == AttackTarget)
+                {
+                    Debug.Log("Can Attack");
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }                
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+
+    // CANNOT  USE COROUTINE IN STATE SO PASS IT THROUGH THIS FUNCTION
+    public void StartAttackRoutine()
+    {
+        if (!RechargingAttack)
+        {
+            StartCoroutine(AttackRoutine());
+        }
+    }
+
+
+    // Runs the attack routine once per amount of time in Attack speed
+    public IEnumerator AttackRoutine()
+    {
+        RechargingAttack = true;
+        Attack();
+        yield return new WaitForSeconds(AttackSpeed);
+        RechargingAttack = false;
+    }
+
+
+    // Attack the target
+    public void Attack()
+    {
+        if (AttackTarget != null)
+        {
+            // If this unit is a Knight or Pikeman
+            if (this.GetComponent<F_Knight>() != null || this.GetComponent<E_Knight>() != null || this.GetComponent<F_Pikeman>() != null || this.GetComponent<E_Pikeman>() != null)
+            {
+                // If the Attack Target is a building
+                if (AttackTarget.GetComponent<Building>() != null)
+                {
+                    // Deal damage to the building
+                    AttackTarget.GetComponent<Building>().Health -= (AttackDamage + Random.Range(-4, 4));
+                }
+                else
+                {
+                    // Checks to see if the enemy is a pikeman (Pikemen deal back 20% of all close range damage taken)
+                    if (AttackTarget.GetComponent<F_Pikeman>() != null || AttackTarget.GetComponent<E_Pikeman>() != null)
+                    {
+                        UnitClass.Health -= UnitClass.AttackDamage * 0.2f;
+                    }
+
+                    GetUnitClass(AttackTarget).Health -= (AttackDamage + Random.Range(-4, 4));
+                }
+            }
+            // If this unit is an Archer or Wizard
+            else if (this.GetComponent<F_Archer>() != null || this.GetComponent<E_Archer>() != null || this.GetComponent<F_Wizard>() != null || this.GetComponent<E_Wizard>() != null)
+            {
+                Debug.Log("Attack Initiated");
+
+                GameObject Projectile = Instantiate(ProjectilePrefab, this.transform.Find("Projectile Spawn Point").transform.position, this.transform.Find("Projectile Spawn Point").transform.rotation);
+                Projectile.GetComponent<Projectile>().Attacker = this.gameObject;
+                Projectile.GetComponent<Projectile>().Damage = (AttackDamage + Random.Range(-4, 4));
+                Projectile.GetComponent<Projectile>().Speed = ProjectileSpeed;
+            }
+        }
+    }
+
+
+    // Turn to face the attack target
+    public void FaceEnemy()
+    {
+        transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(AttackTarget.transform.position - transform.position), 2.5f * Time.deltaTime);
+    }
+
+
+    #endregion
+
+
+
+    // Destroys the unit if it runs out of health
+    public void IsAlive()
+    {
+        if (this.Health <= 0)
+        {
+            // Holds all opposition units 
+            GameObject[] OppositionUnits;
+
+            // Determines whether the dying unit is a Player or Enemy unit and gets stores all opposition units in an array
+            if (this.gameObject.tag == "Player")
+            {
+                OppositionUnits = GameObject.FindGameObjectsWithTag("Enemy");
+            }
+            else
+            {
+                OppositionUnits = GameObject.FindGameObjectsWithTag("Player");
+            }
+
+            // Checks each opposition unit and clears their attack target if they are targeting this unit
+            foreach (GameObject Unit in OppositionUnits)
+            {
+                // If the opposition unit is targeting this unit
+                if (GetUnitClass(Unit).AttackTarget = this.gameObject)
+                {
+                    // Clears the AttackTarget
+                    GetUnitClass(Unit).AttackTarget = null;
+                }
+            }
+
+            Destroy(this.gameObject);
+        }
+    }
+
+    
+
     // Heals the unit over time
     public void HealUnit(float MaxHealth)
     {
@@ -141,40 +274,98 @@ public class Unit : MonoBehaviour
         }
     }
 
+
+
+
+
+
     #region AI Functions
 
-    public bool CanAttack()
+    public GameObject GetAITarget()
     {
-        RaycastHit ObjectInfo = new RaycastHit();
+        GameObject CurrentTarget = null;
+        GameObject[] PotentialTargets;
 
-        Debug.DrawRay(this.transform.position, this.transform.forward * Range, Color.red);
+        // First check all opposition units
+        PotentialTargets = GameObject.FindGameObjectsWithTag("Player");
 
-        if (Vector3.Distance(this.gameObject.transform.position, AttackTarget.transform.position) < Range)
+        Debug.Log("SDFG");
+
+        // Checks every opposition unit
+        foreach (GameObject Unit in PotentialTargets)
         {
-            Debug.Log("Check 1");
-            if (Physics.Raycast(this.transform.position, this.transform.forward, out ObjectInfo, Range))
-            {
-                Debug.Log("Check 2");
-                if (ObjectInfo.transform.gameObject == AttackTarget)
-                {
-                    Debug.Log("Check 3");
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                return false;
-            }
             
+            Vector3 THIS = new Vector3(this.transform.position.x, this.transform.position.y + 1, this.transform.position.z);
+            Vector3 UNIT = new Vector3(Unit.transform.position.x, Unit.transform.position.y + 1, Unit.transform.position.z);
+
+            // Debug.DrawRay(THIS, (UNIT - THIS).normalized * Vector3.Distance(THIS, UNIT), Color.yellow);
+
+            // If the opposition unit is in sight range (50)
+            if (Vector3.Distance(THIS, UNIT) < 50)
+            {
+                // If this is the first unit being looked at
+                if (CurrentTarget == null)
+                {
+                    CurrentTarget = Unit;
+                }
+                // If this unit is closer than the previous closest unit
+                else if (Vector3.Distance(THIS, UNIT) < Vector3.Distance(THIS, new Vector3(CurrentTarget.transform.position.x, CurrentTarget.transform.position.y + 1, CurrentTarget.transform.position.z)))
+                {
+                    CurrentTarget = Unit;
+                }
+            }  
         }
-        else
+
+        // At this point, if there are opposition units within 50, the closest is stored in CurrentTarget
+
+        // Holds the type of building
+        string BuildingType = null;       
+
+        // If there is no opposition unit to target
+        if (CurrentTarget == null)
         {
-            return false;
+            // Runs this code 4 times (Once for each building type)
+            for (int x = 0; x < 4; x++)
+            {
+                // Changes the tag being assessed
+                switch (x)
+                {
+                    case 0:
+                        BuildingType = "Income";
+                        break;
+                    case 1:
+                        BuildingType = "Apothecary";
+                        break;
+                    case 2:
+                        BuildingType = "Barracks";
+                        break;
+                    case 3:
+                        BuildingType = "Main Tower";
+                        break;
+                }
+
+                // Gets all the buildings under tag
+                PotentialTargets = GameObject.FindGameObjectsWithTag(BuildingType);
+
+                // Checks all buildings of that tag
+                foreach (GameObject Building in PotentialTargets)
+                {
+                    // If this is the first threat in range
+                    if (CurrentTarget == null)
+                    {
+                        CurrentTarget = Building;
+                    }
+                    // If the current closest building is further away than the building being looked at
+                    else if (Vector3.Distance(this.gameObject.transform.position, Building.transform.position) < Vector3.Distance(this.gameObject.transform.position, CurrentTarget.transform.position))
+                    {
+                        CurrentTarget = Building;
+                    }
+                }
+            }
         }
+
+        Debug.Log("Attack target is " + CurrentTarget);
+        return CurrentTarget;
     }
 
     // Gets a unit threat;
@@ -191,22 +382,18 @@ public class Unit : MonoBehaviour
             {
                 Unit Class = GetUnitClass(Unit);
 
-                // If the threat is targeting this unit
-                if (Class.AttackTarget == this.gameObject)
+                // If the threat is within threatening distance
+                if (Vector3.Distance(this.gameObject.transform.position, Unit.transform.position) > 50)
                 {
-                    // If the threat is within threatening distance
-                    if (Vector3.Distance(this.gameObject.transform.position, Unit.transform.position) > 50)
+                    // If this is the first threat in range
+                    if (ClosestThreat == null)
                     {
-                        // If this is the first threat in range
-                        if (ClosestThreat == null)
-                        {
-                            ClosestThreat = Unit;
-                        }
-                        // If the current closest threat is further away than the unit being looked at
-                        else if (Vector3.Distance(this.gameObject.transform.position, ClosestThreat.transform.position) > Vector3.Distance(this.gameObject.transform.position, Unit.transform.position))
-                        {
-                            ClosestThreat = Unit;
-                        }
+                        ClosestThreat = Unit;
+                    }
+                    // If the current closest threat is further away than the unit being looked at
+                    else if (Vector3.Distance(this.gameObject.transform.position, ClosestThreat.transform.position) > Vector3.Distance(this.gameObject.transform.position, Unit.transform.position))
+                    {
+                        ClosestThreat = Unit;
                     }
                 }
             }
@@ -242,7 +429,7 @@ public class Unit : MonoBehaviour
                     BuildingType = "Barracks";
                     break;
                 case 3:
-                    BuildingType = "Main Castle";
+                    BuildingType = "Main Tower";
                     break;
             }
 
@@ -271,6 +458,31 @@ public class Unit : MonoBehaviour
 
         return ClosestBuilding;
     }
+
+    // Finds the closest Gate to the unit
+    public GameObject FindNearestGate()
+    {
+        GameObject NearestGate = null;
+        GameObject[] AllGates = GameObject.FindGameObjectsWithTag("Gate");
+
+        // Checks all gates
+        foreach (GameObject Gate in AllGates)
+        {
+            // If this is the first gate being checked
+            if (NearestGate == null)
+            {
+                NearestGate = Gate;
+            }
+            // If this gate is closer than the gate held in NearestGate;
+            else if (Vector3.Distance(this.gameObject.transform.position, NearestGate.transform.position) > Vector3.Distance(this.gameObject.transform.position, Gate.transform.position))
+            {
+                NearestGate = Gate;
+            }
+        }
+
+        return NearestGate;
+    }
+
 
     public void GetEnemiesInRange()
     {

@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6854900467458644499}
   m_Layer: 0
-  m_Name: Spell Spawn Point
+  m_Name: Projectile Spawn Point
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -267,7 +267,10 @@ MonoBehaviour:
   AttackDamage: 0
   Range: 0
   AttackSpeed: 0
+  ProjectilePrefab: {fileID: 8618222821693528793, guid: cc763f53f2625e04a9173ee2f4ff62c4,
+    type: 3}
   IsBeingHealed: 0
+  AIBehaviour: {fileID: 0}
   SpellPrefab: {fileID: 8618222821693528793, guid: cc763f53f2625e04a9173ee2f4ff62c4,
     type: 3}
   MainCam: {fileID: 0}
