@@ -11,6 +11,54 @@ public interface State
     void Exit();
 }
 
+// PLAYER UNITS ONLY
+// Locate Target is where the unit will evaluate its surroundings and find a suitable attack target (Player Unit or Building)
+public class HoldPosition : State
+{
+    private GameObject Owner;
+    private Unit OwnerScript;
+
+    public HoldPosition(GameObject _owner, Unit _ownerScript)
+    {
+        Owner = _owner;
+        OwnerScript = _ownerScript;
+    }
+
+    public void Enter()
+    {
+        OwnerScript.agent.isStopped = false;
+    }
+
+    public void Execute()
+    {
+        // Execute
+
+        ////////////////////////////////////////////////////////////////////////////////////
+        //////////// The unit stays at their Hold Position until they see an enemy 
+        //////////// They attack the enemy and then return to their hold position
+        ////////////////////////////////////////////////////////////////////////////////////
+
+        OwnerScript.agent.SetDestination(OwnerScript.HoldPosition);
+
+        // Exit Clauses
+
+        // If a target has been found
+        // Change to Move State
+        if (OwnerScript.AttackTarget != null)
+        {
+            OwnerScript.AIBehaviour.ChangeState(new Move(Owner, OwnerScript));
+        }
+
+    }
+
+    public void Exit()
+    {
+        OwnerScript.agent.isStopped = true;
+    }
+}
+
+
+// ENEMY UNIT ONLY
 // Locate Target is where the unit will evaluate its surroundings and find a suitable attack target (Player Unit or Building)
 public class LocateTarget : State
 {
@@ -32,56 +80,11 @@ public class LocateTarget : State
     {
         // Execute
 
-        // Get all potential targets (Opposition Units / Buildings) and set it as a target (Units have priority)
-        // Knight / Archer / Pikeman / Wizard
-        // Income Building
-        // Apothecary
-        // Barracks
-        // Main Tower
+        // Sets the attack target
+        //OwnerScript.AttackTarget = OwnerScript.GetAITarget();
 
-        /// WHEN SELECTING A TARGET FROM THEIR SPAWN POSITION, UNITS SOMETIMES MISS OUT CLOSEST TARGETS FROM ENTRANCE TO CASTLE
-        /// A TRIPWIRE HAS BEEN ATTATCHED TO THE CASTLE GATE TO TRIGGER A BOOL (IsInCastle) TO SIGNIFY THAT THE UNIT IS CLOSE TO THE CASTLE GATE
-        /// THE UNIT'S DECISION WILL REMAIN INACTIVE UNTIL THIS BOOL IS TRUE
 
-        OwnerScript.AttackTarget = OwnerScript.GetAITarget();
-
-        /*
-        // If the Unit is not in the castle, don't start decision making
-        if (!OwnerScript.IsInCastle)
-        {
-            // Move towards nearest gate
-            OwnerScript.agent.SetDestination(OwnerScript.FindNearestGate().transform.position);
-        }
-        // Can begin decision making
-        else
-        {
-            OwnerScript.AttackTarget = OwnerScript.GetAITarget();
-        }
-
-        /*
-
-        // 
-        // If the Unit is not in the castle
-        if (!OwnerScript.IsInCastle)
-        {
-            // Move towards nearest gate
-            OwnerScript.agent.SetDestination(OwnerScript.FindNearestGate().transform.position);
-        }
-        else
-        {   // If there is an opposition unit(s) nearby
-            if (OwnerScript.Threat() != null)
-            {
-                // Attack the closest unit
-                OwnerScript.AttackTarget = OwnerScript.Threat();
-            }
-            // if there is no opposition unit nearby
-            else
-            {
-                // Attack the closest building
-                OwnerScript.AttackTarget = OwnerScript.TargetBuilding();
-            }
-        }
-        */
+        
         // Exit Clauses
 
         // If a target has been found
@@ -125,7 +128,6 @@ public class Move : State
         // Execute
         if (OwnerScript.AttackTarget != null)
         {
-
             Vector3 THIS = new Vector3(Owner.transform.position.x, Owner.transform.position.y + 1, Owner.transform.position.z);
             Vector3 TARGET = new Vector3(OwnerScript.AttackTarget.transform.position.x, OwnerScript.AttackTarget.transform.position.y + 1, OwnerScript.AttackTarget.transform.position.z);
 
@@ -161,13 +163,28 @@ public class Move : State
         if (OwnerScript.AttackTarget == null)
         {
             Debug.Log(Owner + " has lost their target");
-            OwnerScript.AIBehaviour.ChangeState(new LocateTarget(Owner, OwnerScript));
+            switch (Owner.tag)
+            {
+                case "Player":
+                    OwnerScript.AIBehaviour.ChangeState(new HoldPosition(Owner, OwnerScript));
+                    break;
+
+                case "Enemy":
+                    OwnerScript.AIBehaviour.ChangeState(new LocateTarget(Owner, OwnerScript));
+                    break;
+            }            
         }
 
+        // ONLY A CHECK FOR ENEMY UNITS
         // If an enemy or a closer target comes into view
-        else if (OwnerScript.GetAITarget() != OwnerScript.AttackTarget)
+        else if (Owner.tag == "Enemy" && OwnerScript.GetAITarget() != OwnerScript.AttackTarget)
         {
-            OwnerScript.AIBehaviour.ChangeState(new LocateTarget(Owner, OwnerScript));
+            switch (Owner.tag)
+            {
+                case "Enemy":
+                    OwnerScript.AIBehaviour.ChangeState(new LocateTarget(Owner, OwnerScript));
+                    break;
+            }
         }
 
         // If the target is within attack range
@@ -215,10 +232,10 @@ public class Attack : State
         // If there is a target
         if (OwnerScript.AttackTarget != null)
         {
-            Vector3 This = new Vector3(Owner.transform.position.x, Owner.transform.position.y + 1, Owner.transform.position.z);
-            Vector3 Target = new Vector3(OwnerScript.AttackTarget.transform.position.x, OwnerScript.AttackTarget.transform.position.y + 1, OwnerScript.AttackTarget.transform.position.z);
+            Vector3 THIS = new Vector3(Owner.transform.position.x, Owner.transform.position.y + 1, Owner.transform.position.z);
+            Vector3 TARGET = new Vector3(OwnerScript.AttackTarget.transform.position.x, OwnerScript.AttackTarget.transform.position.y + 1, OwnerScript.AttackTarget.transform.position.z);
             RaycastHit ObjectInFront = new RaycastHit();
-            bool Hit = Physics.Raycast(This, Owner.transform.forward, out ObjectInFront, OwnerScript.Range);
+            bool Hit = Physics.Raycast(THIS, Owner.transform.forward, out ObjectInFront, OwnerScript.Range);
 
             // Turn to face the enemy
             OwnerScript.FaceEnemy();
@@ -241,7 +258,16 @@ public class Attack : State
         if (OwnerScript.AttackTarget == null)
         {
             Debug.Log("Lost Attack Target");
-            OwnerScript.AIBehaviour.ChangeState(new LocateTarget(Owner, OwnerScript));
+            switch (Owner.tag)
+            {
+                case "Player":
+                    OwnerScript.AIBehaviour.ChangeState(new HoldPosition(Owner, OwnerScript));
+                    break;
+
+                case "Enemy":
+                    OwnerScript.AIBehaviour.ChangeState(new LocateTarget(Owner, OwnerScript));
+                    break;
+            }
         }
 
         // If a more threatening target has been noticed (Previously attacking building and enemy comes into sight)

@@ -13,58 +13,64 @@ public class F_Archer : Archer
     {
         InitiateArcher();
 
-        MainCam = GameObject.Find("Main Camera");
-        Cam = MainCam.GetComponent<Camera>();
+        AIBehaviour = new StateMachine();
+        AIBehaviour.ChangeState(new HoldPosition(this.gameObject, this));
 
+        HoldPosition = this.transform.position;
         agent = this.gameObject.GetComponent<NavMeshAgent>();
     }
 
     // Update is called once per frame
     void Update()
     {
+        this.AIBehaviour.ExecuteStateUpdate();
+
         IsAlive();
         //IsAttacking();
-        //MoveUnit();
         HealUnit(MaxHealth);
 
-        if (CanAttack())
-        {
-            StartAttackRoutine();
-        }
-        else
-        {
-            agent.SetDestination(AttackTarget.transform.position);
-        }
     }
 
     #region Attacking
 
-    bool IsRecharging = false;
-
     void IsAttacking()
     {
+        // If there is an attack target
         if (AttackTarget != null)
         {
-            // Restarts the agent after stopping
-            agent.isStopped = false;
-
-            // If the unit is too far away to attack
-            if (Vector3.Distance(this.gameObject.transform.position, AttackTarget.transform.position) > Range)
+            // If the unit has a clear sight of the enemy
+            if (CanAttack())
             {
-                // Move towards enemy
-                agent.SetDestination(AttackTarget.transform.position);
+                Vector3 THIS = new Vector3(this.transform.position.x, this.transform.position.y + 1, this.transform.position.z);
+                Vector3 TARGET = new Vector3(AttackTarget.transform.position.x, AttackTarget.transform.position.y + 1, AttackTarget.transform.position.z);
+
+                RaycastHit ObjectInFront = new RaycastHit();
+                bool Hit = Physics.Raycast(THIS, this.transform.forward, out ObjectInFront, Range);
+
+                // Turn to face the enemy
+                FaceEnemy();
+
+                // If something is in aim and within range
+                if (Hit)
+                {
+                    // If the Attack Target is in Aim
+                    if (ObjectInFront.transform.gameObject == AttackTarget)
+                    {
+                        // Turn to face the enemy
+                        FaceEnemy();
+                        StartAttackRoutine();
+                    }
+                }
             }
             else
             {
-                agent.isStopped = true;
-                FaceEnemy();
-                if (!IsRecharging)
-                {
-                    StartCoroutine(AttackRoutine());
-                }
-            }
+                agent.SetDestination(AttackTarget.transform.position);
+            }            
         }
     }
+
+    
+
 
     #endregion
 

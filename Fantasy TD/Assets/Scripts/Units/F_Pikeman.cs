@@ -13,44 +13,54 @@ public class F_Pikeman : Pikeman
     {
         InitiatePikeman();
 
-        MainCam = GameObject.Find("Main Camera");
-        Cam = MainCam.GetComponent<Camera>();
+        AIBehaviour = new StateMachine();
+        AIBehaviour.ChangeState(new HoldPosition(this.gameObject, this));
 
+        HoldPosition = this.transform.position;
         agent = this.gameObject.GetComponent<NavMeshAgent>();
     }
 
     // Update is called once per frame
     void Update()
     {
+        this.AIBehaviour.ExecuteStateUpdate();
+
         IsAlive();
-        IsAttacking();
+        //IsAttacking();
         //MoveUnit();
         HealUnit(MaxHealth);
     }
 
     #region Attacking
 
-    bool IsRecharging = false;
-
     void IsAttacking()
     {
+        // If there is an attack target
         if (AttackTarget != null)
         {
-            // If the unit is too far away to attack
-            if (Vector3.Distance(this.gameObject.transform.position, AttackTarget.transform.position) > Range)
+            // If the unit has a clear sight of the enemy
+            if (CanAttack())
             {
-                // Move towards enemy
-                agent.SetDestination(AttackTarget.transform.position);
-            }
-            else
-            {
-                //agent.isStopped = true;
-                FaceEnemy();
-                if (!IsRecharging)
+                Vector3 THIS = new Vector3(this.transform.position.x, this.transform.position.y + 1, this.transform.position.z);
+                Vector3 TARGET = new Vector3(AttackTarget.transform.position.x, AttackTarget.transform.position.y + 1, AttackTarget.transform.position.z);
+
+                RaycastHit ObjectInFront = new RaycastHit();
+                bool Hit = Physics.Raycast(THIS, this.transform.forward, out ObjectInFront, Range);
+
+                // If something is in aim and within range
+                if (Hit)
                 {
-                    StartCoroutine(AttackRoutine());
+                    // If the Attack Target is in Aim
+                    if (ObjectInFront.transform.gameObject == AttackTarget)
+                    {
+                        // Turn to face the enemy
+                        FaceEnemy();
+                        StartAttackRoutine();
+                    }
                 }
             }
+
+            agent.SetDestination(AttackTarget.transform.position);
         }
     }
 

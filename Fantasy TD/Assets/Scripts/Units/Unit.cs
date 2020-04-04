@@ -32,6 +32,10 @@ public class Unit : MonoBehaviour
     // If the Unit is recharging their attack
     public bool RechargingAttack;
 
+    // PLAYER UNIT ONLY
+    // Holds the Unit's main position
+    public Vector3 HoldPosition;
+
 
     // Holds Arrow / Spell Prefab
     public GameObject ProjectilePrefab;
@@ -289,8 +293,6 @@ public class Unit : MonoBehaviour
         // First check all opposition units
         PotentialTargets = GameObject.FindGameObjectsWithTag("Player");
 
-        Debug.Log("SDFG");
-
         // Checks every opposition unit
         foreach (GameObject Unit in PotentialTargets)
         {
@@ -367,133 +369,6 @@ public class Unit : MonoBehaviour
         Debug.Log("Attack target is " + CurrentTarget);
         return CurrentTarget;
     }
-
-    // Gets a unit threat;
-    public GameObject Threat()
-    {
-        GameObject ClosestThreat = null;
-        GameObject[] Units = GameObject.FindGameObjectsWithTag("Player");
-
-        // If there is at least one threat (enemy unit)
-        if (Units.Length > 0)
-        {
-            // Checks every threat
-            foreach (GameObject Unit in Units)
-            {
-                Unit Class = GetUnitClass(Unit);
-
-                // If the threat is within threatening distance
-                if (Vector3.Distance(this.gameObject.transform.position, Unit.transform.position) > 50)
-                {
-                    // If this is the first threat in range
-                    if (ClosestThreat == null)
-                    {
-                        ClosestThreat = Unit;
-                    }
-                    // If the current closest threat is further away than the unit being looked at
-                    else if (Vector3.Distance(this.gameObject.transform.position, ClosestThreat.transform.position) > Vector3.Distance(this.gameObject.transform.position, Unit.transform.position))
-                    {
-                        ClosestThreat = Unit;
-                    }
-                }
-            }
-
-            return ClosestThreat;
-        }
-        else
-        {
-            return null;
-        }
-    }
-
-    // Gets the closest building to the unit
-    public GameObject TargetBuilding()
-    {
-        GameObject ClosestBuilding = null;
-        string BuildingType = null;
-        GameObject[] Buildings;
-
-        // Runs this code 4 times
-        for (int x = 0; x < 4; x++)
-        {
-            // Changes the tag being assessed
-            switch (x)
-            {
-                case 0:
-                    BuildingType = "Income";
-                    break;
-                case 1:
-                    BuildingType = "Apothecary";
-                    break;
-                case 2:
-                    BuildingType = "Barracks";
-                    break;
-                case 3:
-                    BuildingType = "Main Tower";
-                    break;
-            }
-
-            // Gets all the buildings under tag
-            Buildings = GameObject.FindGameObjectsWithTag(BuildingType);
-
-            // Checks all buildings of that tag
-            foreach (GameObject Building in Buildings)
-            {
-                // If there is at least one building in the array
-                if (Buildings.Length > 0)
-                {
-                    // If this is the first threat in range
-                    if (ClosestBuilding == null)
-                    {
-                        ClosestBuilding = Building;
-                    }
-                    // If the current closest building is further away than the building being looked at
-                    else if (Vector3.Distance(this.gameObject.transform.position, ClosestBuilding.transform.position) > Vector3.Distance(this.gameObject.transform.position, Building.transform.position))
-                    {
-                        ClosestBuilding = Building;
-                    }
-                }
-            }
-        }
-
-        return ClosestBuilding;
-    }
-
-    // Finds the closest Gate to the unit
-    public GameObject FindNearestGate()
-    {
-        GameObject NearestGate = null;
-        GameObject[] AllGates = GameObject.FindGameObjectsWithTag("Gate");
-
-        // Checks all gates
-        foreach (GameObject Gate in AllGates)
-        {
-            // If this is the first gate being checked
-            if (NearestGate == null)
-            {
-                NearestGate = Gate;
-            }
-            // If this gate is closer than the gate held in NearestGate;
-            else if (Vector3.Distance(this.gameObject.transform.position, NearestGate.transform.position) > Vector3.Distance(this.gameObject.transform.position, Gate.transform.position))
-            {
-                NearestGate = Gate;
-            }
-        }
-
-        return NearestGate;
-    }
-
-
-    public void GetEnemiesInRange()
-    {
-
-    }
-
-    public void LocateTarget()
-    {
-
-    }
-
 
     #endregion
 }

@@ -5,32 +5,31 @@ using UnityEngine.AI;
 
 public class F_Wizard : Wizard
 {
-    public GameObject MainCam;
-    private Camera Cam;
 
     // Start is called before the first frame update
     void Start()
     {
         InitiateWizard();
 
-        MainCam = GameObject.Find("Main Camera");
-        Cam = MainCam.GetComponent<Camera>();
+        AIBehaviour = new StateMachine();
+        AIBehaviour.ChangeState(new HoldPosition(this.gameObject, this));
 
+        HoldPosition = this.transform.position;
         agent = this.gameObject.GetComponent<NavMeshAgent>();
     }
 
     // Update is called once per frame
     void Update()
     {
+        this.AIBehaviour.ExecuteStateUpdate();
+
         IsAlive();
-        IsAttacking();
+        //IsAttacking();
         //MoveUnit();
         HealUnit(MaxHealth);
     }
 
     #region Attacking
-
-    bool IsRecharging = false;
 
     void IsAttacking()
     {
@@ -49,10 +48,7 @@ public class F_Wizard : Wizard
             {
                 agent.isStopped = true;
                 FaceEnemy();
-                if (!IsRecharging)
-                {
-                    StartCoroutine(AttackRoutine());
-                }
+                StartCoroutine(AttackRoutine());
             }
         }
     }

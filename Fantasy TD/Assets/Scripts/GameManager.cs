@@ -239,6 +239,8 @@ public class GameManager : MonoBehaviour
                     case "Ground":
                         if (CurrentUnit != null)
                         {
+                            CurrentUnitScript.HoldPosition = ObjectInfo.point;
+                            /*
                             CurrentUnitScript.agent.isStopped = false;
                             CurrentUnitScript.AttackTarget = null;
                             // If the point clicked is within the castle walls
@@ -247,7 +249,7 @@ public class GameManager : MonoBehaviour
                                 // Move the Unit
                                 CurrentUnitScript.agent.SetDestination(ObjectInfo.point);
                                 Debug.Log("Move " + CurrentUnit.gameObject + " to " + ObjectInfo.point);
-                            }                          
+                            }*/                          
                         }
                         BarracksSelected = false;
                         break;
