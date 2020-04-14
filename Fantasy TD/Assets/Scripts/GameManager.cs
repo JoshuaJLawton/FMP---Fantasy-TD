@@ -7,22 +7,9 @@ using Random = UnityEngine.Random;
 
 public class GameManager : MonoBehaviour
 {
-    public Canvas UICanvas;
-    public Text UICurrency;
-
+    [Header("Game Management")]
+    public bool PlayerHasLost;
     public float Currency;
-
-    public Camera MainCam;
-    public Camera MainCamOut;
-    public Camera MainCamIn;
-    public Camera[] InCam = new Camera[4];
-    public Camera[] OutCam = new Camera[4];
-
-    public GameObject KnightPrefab;
-    public GameObject ArcherPrefab;
-    public GameObject WizardPrefab;
-    public GameObject PikemanPrefab;
-    public GameObject[] EnemyPrefabs = new GameObject[4];
 
     public GameObject CurrentUnit;
     public Unit CurrentUnitScript;
@@ -35,39 +22,75 @@ public class GameManager : MonoBehaviour
     public GameObject[] SpawnGates;
     public bool SpawnWait;
 
+    [Header("UI")]
+    public Canvas UICanvas;
+    public Text UICurrency;
+    public Text UIGameOver;
+    public Text UIViewPoint;
+
+    public GameObject UnitHealthBar;
+    public Text CurrentUnitName;
+    public GameObject EnemyHealthBar;
+    public Text EnemyUnitName;
+    public GameObject MainTowerHealthBar;
+    public GameObject BarracksHealthBar;
+    public Text BarracksName;
+
+    [Header("Cameras")]
+    public Camera MainCam;
+    public Camera[] InCam = new Camera[4];
+    public Camera[] OutCam = new Camera[4];
+
+    public int Direction;
+    // 0 = North
+    // 1 = West
+    // 2 = South
+    // 3 = East
+
+    [Header("Prefabs")]
+    public GameObject KnightPrefab;
+    public GameObject ArcherPrefab;
+    public GameObject WizardPrefab;
+    public GameObject PikemanPrefab;
+    public GameObject[] EnemyPrefabs = new GameObject[4];
+
     
 
     // Start is called before the first frame update
     void Start()
     {
+        // Determines whether the lose conditions of the game has been met
+        PlayerHasLost = false;
+
+        Direction = 0;
+
+        InitiateCameras();
+
         Currency = 1000;
         SpawnGates = GameObject.FindGameObjectsWithTag("Spawn Gate");
 
-        OutCam[0].enabled = true;
-        for (int x = 1; x < 4; x++)
-        {
-            OutCam[x].enabled = false;
-        }
-        for (int x = 0; x < 4; x++)
-        {
-            InCam[x].enabled = false;
-        }
-
-        MainCamIn = InCam[0];
-        MainCamOut = OutCam[0];       
-        MainCam = MainCamOut;
     }
 
     // Update is called once per frame
     void Update()
     {
+        PlayerHasLost = !IsMainTowerStanding();
+
         Income();
         DisplayCurrency();
+        DisplayGameOver();
+        DisplayViewPointText();
+        DisplayCurrentUnitHealthBar();
+        DisplayEnemyUnitHealthBar();
+        DisplayMainTowerHealthBar();
+        DisplayBarracksHealth();
 
-        //EnemiesController();
+        EnemiesController();
 
         SwitchCameras();
 
+        // Debug to test if mouse raycast is working
+        /*
         RaycastHit ObjectInfo = new RaycastHit();
         bool hit = Physics.Raycast(MainCam.ScreenPointToRay(Input.mousePosition), out ObjectInfo);
 
@@ -75,7 +98,7 @@ public class GameManager : MonoBehaviour
         {
             //Debug.Log(ObjectInfo.transform.gameObject);
         }
-
+        */
 
         Click();
 
@@ -90,83 +113,300 @@ public class GameManager : MonoBehaviour
         }   
     }
 
+    #region Game Running
+
+    bool IsMainTowerStanding()
+    {
+        if (GameObject.Find("Main Tower") != null)
+        {
+            Debug.Log("Tower Standing");
+            return true;    
+        }
+        else
+        {
+            Debug.Log("Tower Gone");
+            return false;
+        }
+    }
+
+    #endregion
+
     #region Cameras
 
-    public int x = 0;
+    void InitiateCameras()
+    {
+        for (int x = 0; x < 4; x++)
+        {
+            OutCam[x].enabled = false;
+        }
+        for (int x = 0; x < 4; x++)
+        {
+            InCam[x].enabled = false;
+        }
+
+        MainCam = InCam[0];
+        MainCam.enabled = true;
+    }
     
     void SwitchCameras()
-    {
+    {       
         if (Input.GetKeyDown(KeyCode.A))
         {
-            x--;
-            if (x < 0)
+            Direction--;
+            if (Direction < 0)
             {
-                x = 3;
+                Direction = 3;
             }
+
+            MainCam.enabled = false;
+            MainCam = InCam[Direction];
+            MainCam.enabled = true;
         }
 
         if (Input.GetKeyDown(KeyCode.D))
         {
-            x++;
-            if (x > 3)
+            Direction++;
+            if (Direction > 3)
             {
-                x = 0;
-            }
-        }
-
-        MainCamIn.enabled = false;
-        MainCamIn = InCam[x];
-        MainCamIn.enabled = true;
-
-        MainCamOut.enabled = false;
-        MainCamOut = InCam[x];
-        MainCamOut.enabled = true;
-
-        MainCam = MainCamIn;
-
-
-        /*
-
-        if (Input.GetAxis("Mouse ScrollWheel") > 0f) // forward
-        {
-            x++;
-            if (x > 7)
-            {
-                x = 0;
+                Direction = 0;
             }
 
             MainCam.enabled = false;
-            Cam[x].enabled = true;
-            MainCam = Cam[x];
+            MainCam = InCam[Direction];
             MainCam.enabled = true;
         }
-        else if (Input.GetAxis("Mouse ScrollWheel") < 0f) // backwards
+
+        if (Input.GetKeyDown(KeyCode.Space))
         {
-            x--;
-
-            if (x < 0)
-            {
-                x = 7;
-            }
-
             MainCam.enabled = false;
-            Cam[x].enabled = true;
-            MainCam = Cam[x];
+            MainCam = OutCam[Direction];
             MainCam.enabled = true;
         }
-
-        */
+        else if (Input.GetKeyUp(KeyCode.Space))
+        {
+            MainCam.enabled = false;
+            MainCam = InCam[Direction];
+            MainCam.enabled = true;
+        }
 
     }
 
     #endregion
 
     #region UI
+
     void DisplayCurrency()
     {
-        string Display = "Gold: " + ((int)Currency).ToString();
-        UICurrency.text = Display;
+        if (!PlayerHasLost)
+        {
+            string Display = "Gold: " + ((int)Currency).ToString();
+            UICurrency.text = Display;
+        }
+        else
+        {
+            UICurrency.enabled = false;
+        }
     }
+        
+    void DisplayGameOver()
+    {
+        if (PlayerHasLost)
+        {
+            UIGameOver.enabled = true;
+        }
+        else
+        {
+            UIGameOver.enabled = false;
+        }
+    }
+
+    void DisplayViewPointText()
+    {
+        if (MainCam == InCam[0])
+        {
+            UIViewPoint.text = "North Gate";
+        }
+        else if (MainCam == InCam[1])
+        {
+            UIViewPoint.text = "West Gate";
+        }
+        else if (MainCam == InCam[2])
+        {
+            UIViewPoint.text = "South Gate";
+        }
+        else if (MainCam == InCam[3])
+        {
+            UIViewPoint.text = "East Gate";
+        }
+    }
+
+    void DisplayCurrentUnitHealthBar()
+    {
+        if (CurrentUnit != null)
+        {
+            if (CurrentUnit.GetComponent<F_Knight>() != null)
+            {
+                CurrentUnitName.text = "KNIGHT";
+            }
+            else if (CurrentUnit.GetComponent<F_Archer>() != null)
+            {
+                CurrentUnitName.text = "ARCHER";
+            }
+            else if (CurrentUnit.GetComponent<F_Pikeman>() != null)
+            {
+                CurrentUnitName.text = "PIKEMAN";
+            }
+            else if (CurrentUnit.GetComponent<F_Wizard>() != null)
+            {
+                CurrentUnitName.text = "WIZARD";
+            }
+
+            UnitHealthBar.SetActive(true);
+            UnitHealthBar.GetComponent<Slider>().minValue = 0;
+            UnitHealthBar.GetComponent<Slider>().maxValue = GetUnitClass(CurrentUnit).MaxHealth;
+            UnitHealthBar.GetComponent<Slider>().value = GetUnitClass(CurrentUnit).Health;
+        }
+        else
+        {
+            UnitHealthBar.gameObject.SetActive(false);
+        }
+    }
+
+    void DisplayEnemyUnitHealthBar()
+    {
+        if (CurrentUnit != null)
+        {
+            Unit CurrentUnitScript = GetUnitClass(CurrentUnit);
+
+            if (CurrentUnitScript.AttackTarget != null)
+            {
+                Unit EnemyScript = GetUnitClass(CurrentUnitScript.AttackTarget);
+
+                if (CurrentUnitScript.AttackTarget.GetComponent<E_Knight>() != null)
+                {
+                    EnemyUnitName.text = "ENEMY KNIGHT";
+                }
+                else if (CurrentUnitScript.AttackTarget.GetComponent<E_Archer>() != null)
+                {
+                    EnemyUnitName.text = "ENEMY ARCHER";
+                }
+                else if (CurrentUnitScript.AttackTarget.GetComponent<E_Pikeman>() != null)
+                {
+                    EnemyUnitName.text = "ENEMY PIKEMAN";
+                }
+                else if (CurrentUnitScript.AttackTarget.GetComponent<E_Wizard>() != null)
+                {
+                    EnemyUnitName.text = "ENEMY WIZARD";
+                }
+
+                EnemyHealthBar.SetActive(true);
+                EnemyHealthBar.GetComponent<Slider>().minValue = 0;
+                EnemyHealthBar.GetComponent<Slider>().maxValue = EnemyScript.MaxHealth;
+                EnemyHealthBar.GetComponent<Slider>().value = EnemyScript.Health;
+            }
+            else
+            {
+                EnemyHealthBar.gameObject.SetActive(false);
+            }
+        }
+        else
+        {
+            EnemyHealthBar.gameObject.SetActive(false);
+        }
+    }
+
+    void DisplayMainTowerHealthBar()
+    {
+        GameObject MainTower = GameObject.Find("Main Tower");
+        if (MainTower != null)
+        {
+            MainTowerHealthBar.SetActive(true);
+            MainTowerHealthBar.GetComponent<Slider>().minValue = 0;
+            MainTowerHealthBar.GetComponent<Slider>().maxValue = 500;
+            MainTowerHealthBar.GetComponent<Slider>().value = MainTower.GetComponent<Building>().Health;
+        }
+        else
+        {
+            MainTowerHealthBar.SetActive(false);
+        }
+    }
+
+    void DisplayBarracksHealth()
+    {
+        GameObject Barracks = null;
+        string Name = null;
+
+        switch (Direction)
+        {
+            //North
+            case 0:
+                if (GameObject.Find("North Barracks") != null)
+                {
+                    Barracks = GameObject.Find("North Barracks");
+                    Name = "NORTH BARRACKS";
+                }
+                else
+                {
+                    Barracks = null;
+                    Name = null;
+                }
+                break;
+            // West
+            case 1:
+                if (GameObject.Find("West Barracks") != null)
+                {
+                    Barracks = GameObject.Find("West Barracks");
+                    Name = "WEST BARRACKS";
+                }
+                else
+                {
+                    Barracks = null;
+                    Name = null;
+                }
+                break;
+            // South
+            case 2:
+                if (GameObject.Find("South Barracks") != null)
+                {
+                    Barracks = GameObject.Find("South Barracks");
+                    Name = "SOUTH BARRACKS";
+                }
+                else
+                {
+                    Barracks = null;
+                    Name = null;
+                }
+                break;
+            // East
+            case 3:
+                if (GameObject.Find("East Barracks") != null)
+                {
+                    Barracks = GameObject.Find("East Barracks");
+                    Name = "EAST BARRACKS";
+                }
+                else
+                {
+                    Barracks = null;
+                    Name = null;
+                }
+                break;
+        }
+
+        if (Barracks != null)
+        {
+            BarracksHealthBar.SetActive(true);
+            BarracksHealthBar.GetComponent<Slider>().minValue = 0;
+            BarracksHealthBar.GetComponent<Slider>().maxValue = 300;
+            BarracksHealthBar.GetComponent<Slider>().value = Barracks.GetComponent<Building>().Health;
+            BarracksName.text = Name;
+        }
+        else
+        {
+            BarracksHealthBar.SetActive(false);
+        }
+
+    }
+
 
     #endregion
 
@@ -305,7 +545,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // Checks which kind of script is on the a particular unit
+    // Gets which kind of script is on the a particular unit
     public Unit GetUnitClass(GameObject Unit)
     {
         if (Unit.GetComponent<E_Knight>() != null)

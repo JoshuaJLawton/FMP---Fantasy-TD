@@ -280,7 +280,47 @@ public class Unit : MonoBehaviour
 
 
 
+    #region Player Functions
 
+    // Detects enemies within range of the unit's view range
+    public GameObject DetectEnemy()
+    {
+        GameObject CurrentTarget = null;
+        GameObject[] PotentialTargets;
+
+        // First check all opposition units
+        PotentialTargets = GameObject.FindGameObjectsWithTag("Enemy");
+
+        // Checks every opposition unit
+        foreach (GameObject Unit in PotentialTargets)
+        {
+
+            Vector3 THIS = new Vector3(this.transform.position.x, this.transform.position.y + 1, this.transform.position.z);
+            Vector3 UNIT = new Vector3(Unit.transform.position.x, Unit.transform.position.y + 1, Unit.transform.position.z);
+
+            // Debug.DrawRay(THIS, (UNIT - THIS).normalized * Vector3.Distance(THIS, UNIT), Color.yellow);
+
+            // If the opposition unit is in sight range (50) and within sight range of the hold position
+            // (The unit only attacks if the enemy is in range of their set area
+            if (Vector3.Distance(HoldPosition, UNIT) < 50 && Vector3.Distance(THIS, UNIT) < 50)
+            {
+                // If this is the first unit being looked at
+                if (CurrentTarget == null)
+                {
+                    CurrentTarget = Unit;
+                }
+                // If this unit is closer than the previous closest unit
+                else if (Vector3.Distance(THIS, UNIT) < Vector3.Distance(THIS, new Vector3(CurrentTarget.transform.position.x, CurrentTarget.transform.position.y + 1, CurrentTarget.transform.position.z)))
+                {
+                    CurrentTarget = Unit;
+                }
+            }
+        }
+
+        return CurrentTarget;
+    }
+
+    #endregion
 
 
     #region AI Functions
