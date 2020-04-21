@@ -114,10 +114,44 @@ public class Projectile : MonoBehaviour
                 {
                     HitUnitClass.Health -= Damage;
                     Debug.Log("Arrow hit " + other.gameObject + "for" + Damage + " damage");
+                    if (this.tag == "Spell")
+                    {
+                        SplashDamage(other.gameObject);
+                    }                   
                 }
             }
 
             Destroy(this.gameObject);
+        }
+    }
+
+    void SplashDamage(GameObject HitTarget)
+    {        
+        switch (HitTarget.tag)
+        {
+            case "Player":
+                GameObject[] PlayerUnits = GameObject.FindGameObjectsWithTag("Player");
+
+                foreach (GameObject Player in PlayerUnits)
+                {
+                    if (Vector3.Distance(this.transform.position, Player.transform.position) < 5)
+                    {
+                        GetUnitClass(Player).Health -= Damage - Vector3.Distance(this.transform.position, Player.transform.position);
+                    }
+                }
+                break;
+
+            case "Enemy":
+                GameObject[] EnemyUnits = GameObject.FindGameObjectsWithTag("Enemy");
+
+                foreach (GameObject Enemy in EnemyUnits)
+                {
+                    if (Vector3.Distance(this.transform.position, Enemy.transform.position) < 5)
+                    {
+                        GetUnitClass(Enemy).Health -= Damage - Vector3.Distance(this.transform.position, Enemy.transform.position);
+                    }
+                }
+                break;
         }
     }
 }

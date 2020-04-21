@@ -13,6 +13,8 @@ TagManager:
   - Enemy
   - Main Tower
   - Gate
+  - Arrow
+  - Spell
   layers:
   - Default
   - TransparentFX

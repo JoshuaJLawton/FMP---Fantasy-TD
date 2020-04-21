@@ -3,10 +3,22 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
-using Random = UnityEngine.Random;
+using UnityEngine.SceneManagement;
+//using Random = UnityEngine.Random;
 
 public class GameManager : MonoBehaviour
 {
+    [Header("Main Menu")]
+
+    public Camera MenuCamera;
+
+    public GameObject MainMenuPanel, ControlsPanel, CreditsPanel;
+    public Button StartGameBTN, OpenControlsBTN, OpenCreditsBTN;
+    public Button ControlsReturnBTN, CreditsReturnBTN;
+    public GameObject MusicCreditsTitle, MusicCredits, ArtCreditsTitle, ArtCredits, ProgrammingCreditsTitle, ProgrammingCredits, GameDesignCreditsTitle, GameDesignCredits;
+
+    bool PlayingCredits = false;
+
     [Header("Game Management")]
     public bool PlayerHasLost;
     public float Currency;
@@ -23,6 +35,7 @@ public class GameManager : MonoBehaviour
     public bool SpawnWait;
 
     [Header("UI")]
+
     public Canvas UICanvas;
     public Text UICurrency;
     public Text UIGameOver;
@@ -58,60 +71,227 @@ public class GameManager : MonoBehaviour
 
     // Start is called before the first frame update
     void Start()
-    {
-        // Determines whether the lose conditions of the game has been met
-        PlayerHasLost = false;
+    { 
+        // Determines which scene is open
+        switch (SceneManager.GetActiveScene().name)
+        {
+            case "Main Menu":
+                MainMenuPanel.SetActive(true);
+                ControlsPanel.SetActive(false);
+                CreditsPanel.SetActive(false);
 
-        Direction = 0;
+                MusicCreditsTitle.SetActive(false);
+                MusicCredits.SetActive(false);
+                ArtCreditsTitle.SetActive(false);
+                ArtCredits.SetActive(false);
+                ProgrammingCreditsTitle.SetActive(false);
+                ProgrammingCredits.SetActive(false);
+                GameDesignCreditsTitle.SetActive(false);
+                GameDesignCredits.SetActive(false);
+                break;
+            case "Gamefield":
+                // Determines whether the lose conditions of the game has been met
+                PlayerHasLost = false;
 
-        InitiateCameras();
+                Direction = 0;
 
-        Currency = 1000;
-        SpawnGates = GameObject.FindGameObjectsWithTag("Spawn Gate");
+                InitiateCameras();
 
+                Currency = 1000;
+                SpawnGates = GameObject.FindGameObjectsWithTag("Spawn Gate");
+                break;
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        PlayerHasLost = !IsMainTowerStanding();
-
-        Income();
-        DisplayCurrency();
-        DisplayGameOver();
-        DisplayViewPointText();
-        DisplayCurrentUnitHealthBar();
-        DisplayEnemyUnitHealthBar();
-        DisplayMainTowerHealthBar();
-        DisplayBarracksHealth();
-
-        EnemiesController();
-
-        SwitchCameras();
-
-        // Debug to test if mouse raycast is working
-        /*
-        RaycastHit ObjectInfo = new RaycastHit();
-        bool hit = Physics.Raycast(MainCam.ScreenPointToRay(Input.mousePosition), out ObjectInfo);
-
-        if (hit)
+        // Determines which scene is open
+        switch (SceneManager.GetActiveScene().name)
         {
-            //Debug.Log(ObjectInfo.transform.gameObject);
-        }
-        */
+            case "Main Menu":
+                MoveMenuCamera();
+                RunButtons();
+                if (CreditsPanel.activeSelf)
+                {
+                    PlayCredits();
+                }
+                break;
 
-        Click();
+            case "Gamefield":
+                PlayerHasLost = !IsMainTowerStanding();
 
-        if (CurrentUnit != null)
-        {
-            CurrentUnitScript = GetUnitClass(CurrentUnit);
-        }
+                Income();
+                DisplayCurrency();
+                DisplayGameOver();
+                DisplayViewPointText();
+                DisplayCurrentUnitHealthBar();
+                DisplayEnemyUnitHealthBar();
+                DisplayMainTowerHealthBar();
+                DisplayBarracksHealth();
 
-        if (SelectedBarracks != null)
-        {
-            SpawnUnits(SelectedBarracks);
-        }   
+                EnemiesController();
+
+                SwitchCameras();
+
+                Click();
+
+                if (CurrentUnit != null)
+                {
+                    CurrentUnitScript = GetUnitClass(CurrentUnit);
+                }
+
+                if (SelectedBarracks != null)
+                {
+                    SpawnUnits(SelectedBarracks);
+                }
+
+                // Debug to test if mouse raycast is working
+                /*
+                RaycastHit ObjectInfo = new RaycastHit();
+                bool hit = Physics.Raycast(MainCam.ScreenPointToRay(Input.mousePosition), out ObjectInfo);
+
+                if (hit)
+                {
+                    //Debug.Log(ObjectInfo.transform.gameObject);
+                }
+                */
+                break;
+        }  
     }
+
+    #region Main Menu
+
+    // Main Menu
+
+    void MoveMenuCamera()
+    {
+        //POSITION -31.8, 75, 103.7 ROTATION 35, 20, 0
+        MenuCamera.transform.RotateAround(new Vector3(0, 0, 0), Vector3.up, 15 * Time.deltaTime);
+    }
+
+    IEnumerator MoveMenuCam()
+    {
+        yield return new WaitForSeconds(1);
+    }
+
+    // If buttons are clicked
+    void RunButtons()
+    {
+        StartGameBTN.onClick.AddListener(StartGame);
+        OpenControlsBTN.onClick.AddListener(Controls);
+        OpenCreditsBTN.onClick.AddListener(Credits);
+
+        ControlsReturnBTN.onClick.AddListener(Return);
+        CreditsReturnBTN.onClick.AddListener(Return);
+    }
+
+    // Main Menu Panel
+
+    // Begins the game
+    void StartGame()
+    {
+        SceneManager.LoadScene(1);
+    }
+
+    // Opens the Controls Panel
+    void Controls()
+    {
+        MainMenuPanel.SetActive(false);
+        ControlsPanel.SetActive(true);
+    }
+
+    // Opens the Credits Panel
+    void Credits()
+    {
+        MainMenuPanel.SetActive(false);
+        CreditsPanel.SetActive(true);
+    }
+
+    // Controls Panel
+
+
+
+    // Credits Panel
+
+    // Makes the Credits appear        
+    void PlayCredits()
+    {
+        if (!PlayingCredits)
+        {
+            StartCoroutine(Play());
+        }
+    }
+
+    IEnumerator Play()
+    {
+        GameObject[] Titles = {MusicCreditsTitle, ArtCreditsTitle, GameDesignCreditsTitle, ProgrammingCreditsTitle};
+        GameObject[] Credits = {MusicCredits, ArtCredits, GameDesignCredits, ProgrammingCredits};
+
+        PlayingCredits = true;
+
+        Color Original = Titles[0].GetComponent<Text>().color;
+
+        for (int x = 0; x < 4; x++)
+        {
+            Titles[x].GetComponent<Text>().color = Color.clear;
+            Credits[x].GetComponent<Text>().color = Color.clear;
+            Titles[x].SetActive(true);
+            Credits[x].SetActive(true);
+            StartCoroutine(FadeTextIn(Titles[x], Original));
+            StartCoroutine(FadeTextIn(Credits[x], Original));
+            yield return new WaitForSeconds(5);
+            StartCoroutine(FadeTextOut(Titles[x], Original));
+            StartCoroutine(FadeTextOut(Credits[x], Original));
+            yield return new WaitForSeconds(3);
+            Titles[x].SetActive(false);
+            Credits[x].SetActive(false);
+            Titles[x].GetComponent<Text>().color = Original;
+            Credits[x].GetComponent<Text>().color = Original;
+            if (x == 3)
+            {
+                PlayingCredits = false;
+            }
+        }
+    }
+
+    IEnumerator FadeTextIn(GameObject Text, Color Original)
+    {
+        for (float t = 0.01f; t < 1; t += Time.deltaTime)
+        {
+            Text.GetComponent<Text>().color = Color.Lerp(Color.clear, Original, Mathf.Min(1, t / 1));
+            yield return null;
+        }
+    }
+
+    IEnumerator FadeTextOut(GameObject Text, Color Original)
+    {
+
+        for (float t = 0.01f; t < 1; t += Time.deltaTime)
+        {
+            Text.GetComponent<Text>().color = Color.Lerp(Original, Color.clear, Mathf.Min(1, t / 1));
+            yield return null;
+        }
+    }
+
+    // Return Buttons
+
+    // Closes all panels other than the Main Menu
+    void Return()
+    {
+        if (ControlsPanel.activeSelf)
+        {
+            ControlsPanel.SetActive(false);
+        }
+        if (CreditsPanel.activeSelf)
+        {
+            CreditsPanel.SetActive(false);
+        }
+
+        MainMenuPanel.SetActive(true);
+    }
+
+    #endregion
 
     #region Game Running
 
