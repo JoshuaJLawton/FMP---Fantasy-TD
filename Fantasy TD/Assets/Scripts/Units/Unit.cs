@@ -17,6 +17,11 @@ public class Unit : MonoBehaviour
     // Holds the unit's target location
     public Vector3 MoveLocationTarget;
 
+    // Holds the unit's leader
+    public GameObject UnitLeader;
+    // Position to follow a leader
+    public Vector3 FollowOffset;
+
     // Holds the unit's class script
     public Unit UnitClass;
     // Holds the Unit's Maximum amount of health
@@ -142,6 +147,23 @@ public class Unit : MonoBehaviour
                     Debug.Log("Can Attack");
                     return true;
                 }
+                // if the raycast hits a teammate (there is a teammate directly in front of them)
+                else if (ObjectInfo.transform.gameObject.tag == this.gameObject.tag)
+                {
+                    Vector3 FRIENDLY = new Vector3(ObjectInfo.transform.position.x, ObjectInfo.transform.position.y + 1, ObjectInfo.transform.position.z);
+                    RaycastHit ObjectInfo2 = new RaycastHit();
+                    // Shoots a raycast out the remainder of the way to see if it hits the target
+                    bool hit2 = Physics.Raycast(FRIENDLY, (TARGET - THIS).normalized * (Range - Vector3.Distance(THIS, FRIENDLY)), out ObjectInfo);
+                    if (hit2)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+
+                }
                 else
                 {
                     return false;
@@ -234,17 +256,32 @@ public class Unit : MonoBehaviour
     {
         if (this.Health <= 0)
         {
+            // Holds all friendly units
+            GameObject[] FriendlyUnits;
             // Holds all opposition units 
             GameObject[] OppositionUnits;
 
             // Determines whether the dying unit is a Player or Enemy unit and gets stores all opposition units in an array
             if (this.gameObject.tag == "Player")
             {
+                FriendlyUnits = GameObject.FindGameObjectsWithTag("Player");
                 OppositionUnits = GameObject.FindGameObjectsWithTag("Enemy");
             }
             else
             {
+                FriendlyUnits = GameObject.FindGameObjectsWithTag("Enemy");
                 OppositionUnits = GameObject.FindGameObjectsWithTag("Player");
+            }
+
+            // Checks each friendly unit and clears their Unit Leader if they are following this unit
+            foreach (GameObject Unit in FriendlyUnits)
+            {
+                // If the opposition unit is targeting this unit
+                if (GetUnitClass(Unit).UnitLeader = this.gameObject)
+                {
+                    // Clears the AttackTarget
+                    GetUnitClass(Unit).UnitLeader = null;
+                }
             }
 
             // Checks each opposition unit and clears their attack target if they are targeting this unit

@@ -20,6 +20,11 @@ public class GameManager : MonoBehaviour
     bool PlayingCredits = false;
 
     [Header("Game Management")]
+    public int SpawnCount;
+    public bool WaveInProgress;
+    public int Wave;
+    public float Seconds;
+
     public bool PlayerHasLost;
     public float Currency;
 
@@ -28,6 +33,7 @@ public class GameManager : MonoBehaviour
 
     public bool BarracksSelected;
     public GameObject SelectedBarracks;
+    public GameObject[] Barracks = new GameObject[4];
 
     public GameObject Apothecary;
 
@@ -41,13 +47,22 @@ public class GameManager : MonoBehaviour
     public Text UIGameOver;
     public Text UIViewPoint;
 
+    public GameObject UIBarracksBlocked;
+    bool ShowingBarracksBlocked = false;
+
     public GameObject UnitHealthBar;
     public Text CurrentUnitName;
     public GameObject EnemyHealthBar;
     public Text EnemyUnitName;
+    public GameObject LeaderHealthBar;
+    public Text LeaderUnitName;
     public GameObject MainTowerHealthBar;
     public GameObject BarracksHealthBar;
     public Text BarracksName;
+
+    public GameObject UICurrentUnit, UIEnemyUnit, UILeadingUnit;
+
+    public Text UISeconds, UIWave;
 
     [Header("Cameras")]
     public Camera MainCam;
@@ -66,8 +81,6 @@ public class GameManager : MonoBehaviour
     public GameObject WizardPrefab;
     public GameObject PikemanPrefab;
     public GameObject[] EnemyPrefabs = new GameObject[4];
-
-    
 
     // Start is called before the first frame update
     void Start()
@@ -90,12 +103,21 @@ public class GameManager : MonoBehaviour
                 GameDesignCredits.SetActive(false);
                 break;
             case "Gamefield":
+                // Holds the amount of time which has elapsed
+                Seconds = 60.0f;
+                WaveInProgress = true;
+                // Holds the wave of enemies
+                Wave = 1;
                 // Determines whether the lose conditions of the game has been met
                 PlayerHasLost = false;
 
                 Direction = 0;
 
                 InitiateCameras();
+
+                SelectedBarracks = Barracks[0];
+
+                UIBarracksBlocked.SetActive(false);
 
                 Currency = 1000;
                 SpawnGates = GameObject.FindGameObjectsWithTag("Spawn Gate");
@@ -121,24 +143,36 @@ public class GameManager : MonoBehaviour
             case "Gamefield":
                 PlayerHasLost = !IsMainTowerStanding();
 
-                Income();
-                DisplayCurrency();
+                if (!PlayerHasLost)
+                {
+                    Income();
+                    SwitchCameras();
+                    Click();
+                }
+
                 DisplayGameOver();
+                DisplayCurrency();
                 DisplayViewPointText();
                 DisplayCurrentUnitHealthBar();
                 DisplayEnemyUnitHealthBar();
+                DisplayLeadingUnitHealthBar();
                 DisplayMainTowerHealthBar();
                 DisplayBarracksHealth();
+                DisplayCurrentUnitUI();
+                DisplayEnemyUnitUI();
+                DisplayLeadingUnitUI();
 
-                EnemiesController();
-
-                SwitchCameras();
-
-                Click();
+                Waves();
 
                 if (CurrentUnit != null)
                 {
                     CurrentUnitScript = GetUnitClass(CurrentUnit);
+                }
+
+                // CLEAN THIS UP
+                if (Barracks[Direction] != null)
+                {
+                    SelectedBarracks = Barracks[Direction];
                 }
 
                 if (SelectedBarracks != null)
@@ -307,6 +341,52 @@ public class GameManager : MonoBehaviour
             Debug.Log("Tower Gone");
             return false;
         }
+    }
+
+    void Income()
+    {
+        // Only increases currency if it is less than the max of 2000
+        if (Currency < 2000)
+        {
+            // Currency increases faster while more Income buildings are standing and stops completely when there are none
+            GameObject[] IncomeBuildings = GameObject.FindGameObjectsWithTag("Income");
+            Currency += (IncomeBuildings.Length * 0.5f) * Time.deltaTime;
+        }
+        // Sets Currency back to 2000 if it is exceeded
+        else if (Currency > 2000)
+        {
+            Currency = 2000;
+        }
+    }
+
+    void Waves()
+    {
+        if ((int)Seconds == 0)
+        {
+            Seconds = 61;
+            Wave++;
+            WaveInProgress = true;
+        }
+
+        if (WaveInProgress)
+        {
+            UISeconds.text = "Next wave coming soon.";
+            if (!SpawnWait)
+            {
+                float RandomEnemy = Random.Range(0, EnemyPrefabs.Length);
+
+                float RandomSpawn = Random.Range(0, SpawnGates.Length - 1);
+
+                StartCoroutine(SpawnEnemies((int)RandomEnemy, (int)RandomSpawn));
+            }
+        }
+        else
+        {
+            Seconds -= Time.deltaTime;
+            UISeconds.text = (int)Seconds + " seconds until next wave...";
+        }
+
+        UIWave.text = "WAVE " + Wave;
     }
 
     #endregion
@@ -495,6 +575,49 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    void DisplayLeadingUnitHealthBar()
+    {
+        if (CurrentUnit != null)
+        {
+            Unit CurrentUnitScript = GetUnitClass(CurrentUnit);
+
+            if (CurrentUnitScript.UnitLeader != null)
+            {
+                Unit LeaderScript = GetUnitClass(CurrentUnitScript.UnitLeader);
+
+                if (CurrentUnitScript.UnitLeader.GetComponent<F_Knight>() != null)
+                {
+                    LeaderUnitName.text = "KNIGHT";
+                }
+                else if (CurrentUnitScript.UnitLeader.GetComponent<F_Archer>() != null)
+                {
+                    LeaderUnitName.text = "ARCHER";
+                }
+                else if (CurrentUnitScript.UnitLeader.GetComponent<F_Pikeman>() != null)
+                {
+                    LeaderUnitName.text = "PIKEMAN";
+                }
+                else if (CurrentUnitScript.UnitLeader.GetComponent<F_Wizard>() != null)
+                {
+                    LeaderUnitName.text = "WIZARD";
+                }
+
+                LeaderHealthBar.SetActive(true);
+                LeaderHealthBar.GetComponent<Slider>().minValue = 0;
+                LeaderHealthBar.GetComponent<Slider>().maxValue = LeaderScript.MaxHealth;
+                LeaderHealthBar.GetComponent<Slider>().value = LeaderScript.Health;
+            }
+            else
+            {
+                LeaderHealthBar.gameObject.SetActive(false);
+            }
+        }
+        else
+        {
+            LeaderHealthBar.gameObject.SetActive(false);
+        }
+    }
+
     void DisplayMainTowerHealthBar()
     {
         GameObject MainTower = GameObject.Find("Main Tower");
@@ -584,31 +707,90 @@ public class GameManager : MonoBehaviour
         {
             BarracksHealthBar.SetActive(false);
         }
-
     }
 
+    IEnumerator BarracksBlocked()
+    {
+        UIBarracksBlocked.SetActive(true);
+        yield return new WaitForSeconds(1.5f);
+        UIBarracksBlocked.SetActive(false);
+    }
+
+    void DisplayCurrentUnitUI()
+    {
+        if (CurrentUnit != null)
+        {
+            UICurrentUnit.SetActive(true);
+            UICurrentUnit.transform.position = new Vector3(CurrentUnit.transform.position.x, CurrentUnit.transform.position.y + 0.3f, CurrentUnit.transform.position.z);
+            UICurrentUnit.transform.Rotate(0, 0, 50 * Time.deltaTime);
+        }
+        else
+        {
+            UICurrentUnit.SetActive(false);
+        }
+    }
+
+    void DisplayEnemyUnitUI()
+    {
+        if (CurrentUnit != null)
+        {
+            if (GetUnitClass(CurrentUnit).AttackTarget != null)
+            {
+                UIEnemyUnit.SetActive(true);
+                GameObject ET = GetUnitClass(CurrentUnit).AttackTarget;
+                UIEnemyUnit.transform.position = new Vector3(ET.transform.position.x, ET.transform.position.y + 0.3f, ET.transform.position.z);
+                UIEnemyUnit.transform.Rotate(0, 0, 50 * Time.deltaTime);
+            }
+            else
+            {
+                UIEnemyUnit.SetActive(false);
+            }
+        }
+        else
+        {
+            UIEnemyUnit.SetActive(false);
+        }
+    }
+
+    void DisplayLeadingUnitUI()
+    {
+        if (CurrentUnit != null)
+        {
+            if (GetUnitClass(CurrentUnit).UnitLeader != null)
+            {
+                UILeadingUnit.SetActive(true);
+                GameObject LU = GetUnitClass(CurrentUnit).UnitLeader;
+                UILeadingUnit.transform.position = new Vector3(LU.transform.position.x, LU.transform.position.y + 0.3f, LU.transform.position.z);
+                UILeadingUnit.transform.Rotate(0, 0, 50 * Time.deltaTime);
+            }
+            else
+            {
+                UILeadingUnit.SetActive(false);
+            }
+        }
+        else
+        {
+            UILeadingUnit.SetActive(false);
+        }
+    }
 
     #endregion
 
     #region Enemies
 
-    void EnemiesController()
-    {
-        float Rand1 = Random.Range(0, SpawnGates.Length - 1);
-        float Rand2 = Random.Range(0, EnemyPrefabs.Length - 1);
-
-        if (!SpawnWait)
-        {
-            StartCoroutine(SpawnEnemies((int) Rand1, (int) Rand2));
-        }
-        
-    }
-
-    IEnumerator SpawnEnemies(int Random1, int Random2)
+    IEnumerator SpawnEnemies(int RandomEnemy, int RandomSpawn)
     {
         SpawnWait = true;
-        GameObject EnemyUnit = Instantiate(EnemyPrefabs[Random2], SpawnGates[Random1].transform.Find("Unit Spawn Point").transform.position, SpawnGates[Random1].transform.Find("Unit Spawn Point").transform.rotation);
-        yield return new WaitForSeconds(5);
+        GameObject EnemyUnit1 = Instantiate(EnemyPrefabs[RandomEnemy], SpawnGates[RandomSpawn].transform.Find("Unit Spawn Point").transform.position, SpawnGates[RandomSpawn].transform.Find("Unit Spawn Point").transform.rotation);
+        SpawnCount++;
+        
+        if (SpawnCount == Wave * 4)
+        {
+            Debug.Log("Start count for next wave");
+            WaveInProgress = false;
+            SpawnCount = 0;
+        }
+        yield return new WaitForSeconds(2);
         SpawnWait = false;
     }
 
@@ -616,6 +798,7 @@ public class GameManager : MonoBehaviour
 
     void Click()
     {
+        // Left Click
         if (Input.GetMouseButtonDown(0))
         {
             RaycastHit ObjectInfo = new RaycastHit();
@@ -660,6 +843,12 @@ public class GameManager : MonoBehaviour
                         if (CurrentUnit != null)
                         {
                             CurrentUnitScript.HoldPosition = ObjectInfo.point;
+
+                            if (CurrentUnitScript.UnitLeader != null)
+                            {
+                                CurrentUnitScript.FollowOffset = CurrentUnitScript.HoldPosition - CurrentUnitScript.UnitLeader.transform.position;
+                            }
+
                             /*
                             CurrentUnitScript.agent.isStopped = false;
                             CurrentUnitScript.AttackTarget = null;
@@ -676,12 +865,39 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
+        // Right Click
+        else if (Input.GetMouseButtonDown(1))
+        {
+            RaycastHit ObjectInfo = new RaycastHit();
+            bool hit = Physics.Raycast(MainCam.ScreenPointToRay(Input.mousePosition), out ObjectInfo);
+
+            if (hit)
+            {
+                Debug.Log(hit);
+                switch (ObjectInfo.transform.gameObject.tag)
+                {
+                    case "Player":
+                        if (CurrentUnit != null)
+                        {
+                            CurrentUnitScript.UnitLeader = ObjectInfo.transform.gameObject;
+                            CurrentUnitScript.FollowOffset = CurrentUnitScript.HoldPosition - CurrentUnitScript.UnitLeader.transform.position;
+                        }
+                        break;
+                    case "Ground":
+                        if (CurrentUnit != null)
+                        {
+                            CurrentUnitScript.UnitLeader = null;
+                        }
+                        break;
+                }
+            }
+        }
     }
 
     void SpawnUnits(GameObject Barracks)
     {
         // Cost of spawning a unit is 100
-        if (BarracksSelected && Currency >= 100)
+        if (Currency >= 100)
         {
             if (SelectedBarracks.transform.gameObject.GetComponent<Spawner>().UnitOnGate == false)
             {
@@ -706,24 +922,17 @@ public class GameManager : MonoBehaviour
                     CurrentUnit = Instantiate(WizardPrefab, SelectedBarracks.transform.Find("Unit Spawn Point").transform.position, SelectedBarracks.transform.Find("Unit Spawn Point").transform.rotation);
                 }
             }
+            else
+            {
+                if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.Alpha4))
+                {
+                    StartCoroutine(BarracksBlocked());
+                }
+            }
         }
     }
 
-    void Income()
-    {
-        // Only increases currency if it is less than the max of 2000
-        if (Currency < 2000)
-        {
-            // Currency increases faster while more Income buildings are standing and stops completely when there are none
-            GameObject[] IncomeBuildings = GameObject.FindGameObjectsWithTag("Income");
-            Currency += (IncomeBuildings.Length * 0.5f) * Time.deltaTime;
-        }
-        // Sets Currency back to 2000 if it is exceeded
-        else if (Currency > 2000)
-        {
-            Currency = 2000;
-        }
-    }
+    
 
     // Gets which kind of script is on the a particular unit
     public Unit GetUnitClass(GameObject Unit)

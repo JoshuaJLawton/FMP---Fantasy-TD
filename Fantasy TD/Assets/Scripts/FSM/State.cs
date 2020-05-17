@@ -37,10 +37,20 @@ public class HoldPosition : State
         ///////////////////////////////////////// EXECUTE ///////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        // The unit stays at their Hold Position until they see an enemy 
+        // If the unit has a leader they follow the leader and share an attack target with them
+        // Otherwise the unit stays at their Hold Position until they see an enemy 
         // They attack the enemy and then return to their hold position
 
-        if (OwnerScript.DetectEnemy() == null)
+        if (OwnerScript.UnitLeader != null)
+        {
+            OwnerScript.agent.SetDestination(OwnerScript.UnitLeader.transform.position + OwnerScript.FollowOffset);
+
+            if (OwnerScript.GetUnitClass(OwnerScript.UnitLeader).AttackTarget != null)
+            {
+                OwnerScript.AttackTarget = OwnerScript.GetUnitClass(OwnerScript.UnitLeader).AttackTarget;
+            }
+        }
+        else if (OwnerScript.DetectEnemy() == null)
         {
             OwnerScript.agent.SetDestination(OwnerScript.HoldPosition);
         }
@@ -48,7 +58,6 @@ public class HoldPosition : State
         {
             OwnerScript.AttackTarget = OwnerScript.DetectEnemy();
         }
-
 
 
         //OwnerScript.agent.SetDestination(OwnerScript.HoldPosition);
@@ -264,6 +273,7 @@ public class Attack : State
         // If there is a target
         if (OwnerScript.AttackTarget != null)
         {
+            
             Vector3 THIS = new Vector3(Owner.transform.position.x, Owner.transform.position.y + 1, Owner.transform.position.z);
             Vector3 TARGET = new Vector3(OwnerScript.AttackTarget.transform.position.x, OwnerScript.AttackTarget.transform.position.y + 1, OwnerScript.AttackTarget.transform.position.z);
             RaycastHit ObjectInFront = new RaycastHit();
@@ -272,15 +282,11 @@ public class Attack : State
             // Turn to face the enemy
             OwnerScript.FaceEnemy();
 
-            // If something is in aim
-            if (Hit)
+            if (OwnerScript.CanAttack())
             {
-                // If the Attack Target is in Aim
-                if (ObjectInFront.transform.gameObject == OwnerScript.AttackTarget)
-                {
-                    OwnerScript.StartAttackRoutine();
-                }
-            }   
+                OwnerScript.StartAttackRoutine();
+            }
+
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////

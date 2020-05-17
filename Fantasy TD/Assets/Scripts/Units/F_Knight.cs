@@ -71,10 +71,12 @@ public class F_Knight : Knight
         {
             // If the unit has entered the Apothecary Guild
             case "Apothecary Guild":
+                Debug.Log("Knight is being healed");
                 IsBeingHealed = true;
                 break;
             // If the unit has exited the Apothecary Guild
             case "Exit":
+                Debug.Log("Knight is not being healed");
                 IsBeingHealed = false;
                 break;
         }
