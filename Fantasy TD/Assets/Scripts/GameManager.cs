@@ -4,20 +4,23 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-//using Random = UnityEngine.Random;
 
 public class GameManager : MonoBehaviour
 {
+
     [Header("Main Menu")]
 
     public Camera MenuCamera;
 
-    public GameObject MainMenuPanel, ControlsPanel, CreditsPanel;
+    public GameObject MainMenuPanel, ControlsPanel, CreditsPanel, LoadingPanel;
     public Button StartGameBTN, OpenControlsBTN, OpenCreditsBTN;
     public Button ControlsReturnBTN, CreditsReturnBTN;
     public GameObject MusicCreditsTitle, MusicCredits, ArtCreditsTitle, ArtCredits, ProgrammingCreditsTitle, ProgrammingCredits, GameDesignCreditsTitle, GameDesignCredits;
 
     bool PlayingCredits = false;
+
+    bool IsLoadingLevel;
+    public GameObject LoadingBar;
 
     [Header("Game Management")]
     public int SpawnCount;
@@ -46,6 +49,7 @@ public class GameManager : MonoBehaviour
     public Text UICurrency;
     public Text UIGameOver;
     public Text UIViewPoint;
+    public Text UIPrompt;
 
     public GameObject UIBarracksBlocked;
     bool ShowingBarracksBlocked = false;
@@ -89,9 +93,12 @@ public class GameManager : MonoBehaviour
         switch (SceneManager.GetActiveScene().name)
         {
             case "Main Menu":
+                IsLoadingLevel = false;
+
                 MainMenuPanel.SetActive(true);
                 ControlsPanel.SetActive(false);
                 CreditsPanel.SetActive(false);
+                LoadingPanel.SetActive(false);
 
                 MusicCreditsTitle.SetActive(false);
                 MusicCredits.SetActive(false);
@@ -103,6 +110,8 @@ public class GameManager : MonoBehaviour
                 GameDesignCredits.SetActive(false);
                 break;
             case "Gamefield":
+                IsLoadingLevel = false;
+
                 // Holds the amount of time which has elapsed
                 Seconds = 60.0f;
                 WaveInProgress = true;
@@ -118,6 +127,7 @@ public class GameManager : MonoBehaviour
                 SelectedBarracks = Barracks[0];
 
                 UIBarracksBlocked.SetActive(false);
+                UIPrompt.gameObject.SetActive(false);
 
                 Currency = 1000;
                 SpawnGates = GameObject.FindGameObjectsWithTag("Spawn Gate");
@@ -161,6 +171,10 @@ public class GameManager : MonoBehaviour
                 DisplayCurrentUnitUI();
                 DisplayEnemyUnitUI();
                 DisplayLeadingUnitUI();
+                DisplayWaves();
+                DisplayPrompt();
+
+                ReturnToMenu();
 
                 Waves();
 
@@ -180,16 +194,7 @@ public class GameManager : MonoBehaviour
                     SpawnUnits(SelectedBarracks);
                 }
 
-                // Debug to test if mouse raycast is working
-                /*
-                RaycastHit ObjectInfo = new RaycastHit();
-                bool hit = Physics.Raycast(MainCam.ScreenPointToRay(Input.mousePosition), out ObjectInfo);
-
-                if (hit)
-                {
-                    //Debug.Log(ObjectInfo.transform.gameObject);
-                }
-                */
+                
                 break;
         }  
     }
@@ -225,7 +230,38 @@ public class GameManager : MonoBehaviour
     // Begins the game
     void StartGame()
     {
-        SceneManager.LoadScene(1);
+        MainMenuPanel.SetActive(false);
+        LoadingPanel.SetActive(true);
+        
+        StartCoroutine(LoadAsynchronously(1, 2));
+    }
+
+    // Loads a level in the background
+    IEnumerator LoadAsynchronously (int LevelIndex, int Wait)
+    {
+        if (IsLoadingLevel == false)
+        {
+            IsLoadingLevel = true;
+
+            yield return new WaitForSeconds(Wait);
+
+            AsyncOperation Operation = SceneManager.LoadSceneAsync(LevelIndex);
+
+            while (!Operation.isDone)
+            {
+                Debug.Log("Loading level");
+                float Progress = Mathf.Clamp01(Operation.progress / 0.9f);
+
+                LoadingBar.GetComponent<Slider>().value = Progress;
+
+                yield return null;
+            }
+
+            if (!Operation.isDone)
+            {
+                IsLoadingLevel = false;
+            }
+        }
     }
 
     // Opens the Controls Panel
@@ -482,21 +518,28 @@ public class GameManager : MonoBehaviour
 
     void DisplayViewPointText()
     {
-        if (MainCam == InCam[0])
+        if (!PlayerHasLost)
         {
-            UIViewPoint.text = "North Gate";
+            if (MainCam == InCam[0])
+            {
+                UIViewPoint.text = "North Gate";
+            }
+            else if (MainCam == InCam[1])
+            {
+                UIViewPoint.text = "West Gate";
+            }
+            else if (MainCam == InCam[2])
+            {
+                UIViewPoint.text = "South Gate";
+            }
+            else if (MainCam == InCam[3])
+            {
+                UIViewPoint.text = "East Gate";
+            }
         }
-        else if (MainCam == InCam[1])
+        else
         {
-            UIViewPoint.text = "West Gate";
-        }
-        else if (MainCam == InCam[2])
-        {
-            UIViewPoint.text = "South Gate";
-        }
-        else if (MainCam == InCam[3])
-        {
-            UIViewPoint.text = "East Gate";
+            UIViewPoint.gameObject.SetActive(false);
         }
     }
 
@@ -771,6 +814,92 @@ public class GameManager : MonoBehaviour
         else
         {
             UILeadingUnit.SetActive(false);
+        }
+    }
+
+    void ReturnToMenu()
+    {
+        if (PlayerHasLost)
+        {
+            LoadingBar.SetActive(true);
+            StartCoroutine(LoadAsynchronously(0, 4));
+        }
+        else
+        {
+            LoadingBar.SetActive(false);
+        }
+    }
+
+    void DisplayWaves()
+    {
+        if (PlayerHasLost)
+        {
+            UIWave.gameObject.SetActive(false);
+            UISeconds.gameObject.SetActive(false);
+        }
+        else
+        {
+            UIWave.gameObject.SetActive(true);
+            UISeconds.gameObject.SetActive(true);
+        }
+    }
+
+    void DisplayPrompt()
+    {
+        if (!PlayerHasLost)
+        {
+            RaycastHit ObjectInfo = new RaycastHit();
+            bool hit = Physics.Raycast(MainCam.ScreenPointToRay(Input.mousePosition), out ObjectInfo);
+
+            if (hit)
+            {
+                switch (ObjectInfo.transform.gameObject.tag)
+                {
+                    case "Player":
+                        if (ObjectInfo.transform.gameObject == CurrentUnit)
+                        {
+                            UIPrompt.gameObject.SetActive(false);
+                        }
+                        else if (ObjectInfo.transform.gameObject == GetUnitClass(CurrentUnit).UnitLeader)
+                        {
+                            UIPrompt.gameObject.SetActive(true);
+                            UIPrompt.text = "Left Click to select unit.";
+                        }
+                        else if (ObjectInfo.transform.gameObject != GetUnitClass(CurrentUnit).UnitLeader)
+                        {
+                            UIPrompt.gameObject.SetActive(true);
+                            UIPrompt.text = "Left Click to select unit.\nRight Click to follow unit.";
+                        }
+                        break;
+                    case "Enemy":
+                        UIPrompt.gameObject.SetActive(true);
+                        UIPrompt.text = "Left Click to target enemy.";
+                        break;
+                    case "Ground":
+                        if (CurrentUnit != false && GetUnitClass(CurrentUnit).UnitLeader != null)
+                        {
+                            UIPrompt.gameObject.SetActive(true);
+                            UIPrompt.text = "Left Click to move unit here.\nRight Click to stop following.";
+                        }
+                        else if (CurrentUnit != false)
+                        {
+                            UIPrompt.gameObject.SetActive(true);
+                            UIPrompt.text = "Left Click to move unit here.";
+                        }
+                        break;
+                    default:
+                        UIPrompt.gameObject.SetActive(false);
+                        break;
+                }
+            }
+            else
+            {
+                UIPrompt.gameObject.SetActive(false);
+            }
+        }
+        else
+        {
+            UIPrompt.gameObject.SetActive(false);
         }
     }
 
