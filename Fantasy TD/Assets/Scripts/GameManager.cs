@@ -43,6 +43,11 @@ public class GameManager : MonoBehaviour
     public GameObject[] SpawnGates;
     public bool SpawnWait;
 
+    public bool AutoAttack;
+
+    public int UnitIndex;
+    public GameObject[] AllPlayerUnits;
+
     [Header("UI")]
 
     public Canvas UICanvas;
@@ -50,9 +55,9 @@ public class GameManager : MonoBehaviour
     public Text UIGameOver;
     public Text UIViewPoint;
     public Text UIPrompt;
+    public Text UIAutoAttack;
 
     public GameObject UIBarracksBlocked;
-    bool ShowingBarracksBlocked = false;
 
     public GameObject UnitHealthBar;
     public Text CurrentUnitName;
@@ -131,6 +136,8 @@ public class GameManager : MonoBehaviour
 
                 Currency = 1000;
                 SpawnGates = GameObject.FindGameObjectsWithTag("Spawn Gate");
+
+                AutoAttack = false;
                 break;
         }
     }
@@ -157,7 +164,7 @@ public class GameManager : MonoBehaviour
                 {
                     Income();
                     SwitchCameras();
-                    Click();
+                    PlayerInput();
                 }
 
                 DisplayGameOver();
@@ -173,10 +180,13 @@ public class GameManager : MonoBehaviour
                 DisplayLeadingUnitUI();
                 DisplayWaves();
                 DisplayPrompt();
+                DisplayAutoTarget();
 
                 ReturnToMenu();
 
                 Waves();
+
+                AllPlayerUnits = GameObject.FindGameObjectsWithTag("Player");
 
                 if (CurrentUnit != null)
                 {
@@ -363,6 +373,161 @@ public class GameManager : MonoBehaviour
 
     #endregion
 
+    #region Player Input
+
+    void PlayerInput()
+    {
+        // Left Click
+        if (Input.GetMouseButtonDown(0))
+        {
+            RaycastHit ObjectInfo = new RaycastHit();
+            bool hit = Physics.Raycast(MainCam.ScreenPointToRay(Input.mousePosition), out ObjectInfo);
+
+            if (hit)
+            {
+                Debug.Log(hit);
+                switch (ObjectInfo.transform.gameObject.tag)
+                {
+                    // Sets the Unit as the current unit (The unit to be controlled)
+                    case "Player":
+                        Debug.Log("Current Unit is " + ObjectInfo.transform.gameObject.name);
+                        CurrentUnit = ObjectInfo.transform.gameObject;
+
+                        BarracksSelected = false;
+                        break;
+
+                    // Sets the enemy unit as the current unit's attack target
+                    case "Enemy":
+                        // Can only set an attack target if there is a current unit
+                        if (CurrentUnit != null)
+                        {
+                            CurrentUnitScript.AttackTarget = ObjectInfo.transform.gameObject;
+                            Debug.Log("Set " + CurrentUnit + "'s target to " + CurrentUnitScript.AttackTarget);
+                        }
+
+                        BarracksSelected = false;
+                        break;
+
+                    // Selects the barracks so that units may be spawned
+                    case "Barracks":
+                        Debug.Log("BarracksClicked");
+                        BarracksSelected = true;
+                        CurrentUnit = null;
+
+                        SelectedBarracks = ObjectInfo.transform.gameObject;
+                        break;
+
+                    // Selects a point for the selected unit to move
+                    case "Ground":
+                        if (CurrentUnit != null)
+                        {
+                            CurrentUnitScript.HoldPosition = ObjectInfo.point;
+
+                            if (CurrentUnitScript.UnitLeader != null)
+                            {
+                                CurrentUnitScript.FollowOffset = CurrentUnitScript.HoldPosition - CurrentUnitScript.UnitLeader.transform.position;
+                            }
+
+                            /*
+                            CurrentUnitScript.agent.isStopped = false;
+                            CurrentUnitScript.AttackTarget = null;
+                            // If the point clicked is within the castle walls
+                            if ((ObjectInfo.point.x <= 100 && ObjectInfo.point.x >= -100) && (ObjectInfo.point.z <= 100 && ObjectInfo.point.z >= -100))
+                            {
+                                // Move the Unit
+                                CurrentUnitScript.agent.SetDestination(ObjectInfo.point);
+                                Debug.Log("Move " + CurrentUnit.gameObject + " to " + ObjectInfo.point);
+                            }*/
+                        }
+                        BarracksSelected = false;
+                        break;
+                }
+            }
+        }
+        // Right Click
+        else if (Input.GetMouseButtonDown(1))
+        {
+            RaycastHit ObjectInfo = new RaycastHit();
+            bool hit = Physics.Raycast(MainCam.ScreenPointToRay(Input.mousePosition), out ObjectInfo);
+
+            if (hit)
+            {
+                Debug.Log(hit);
+                switch (ObjectInfo.transform.gameObject.tag)
+                {
+                    case "Player":
+                        if (CurrentUnit != null)
+                        {
+                            CurrentUnitScript.UnitLeader = ObjectInfo.transform.gameObject;
+                            CurrentUnitScript.FollowOffset = CurrentUnitScript.HoldPosition - CurrentUnitScript.UnitLeader.transform.position;
+                        }
+                        break;
+                    case "Ground":
+                        if (CurrentUnit != null)
+                        {
+                            CurrentUnitScript.UnitLeader = null;
+                        }
+                        break;
+                }
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            AutoAttack = !AutoAttack;
+        }
+
+        if (Input.GetKeyDown(KeyCode.W))
+        {
+            SwitchToNextUnit(-1);
+        }
+        else if (Input.GetKeyDown(KeyCode.S))
+        {
+            SwitchToNextUnit(1);
+        }
+    }
+
+
+    void SpawnUnits(GameObject Barracks)
+    {
+        // Cost of spawning a unit is 100
+        if (Currency >= 100)
+        {
+            if (SelectedBarracks.transform.gameObject.GetComponent<Spawner>().UnitOnGate == false)
+            {
+                if (Input.GetKeyDown(KeyCode.Alpha1))
+                {
+                    Currency -= 100;
+                    CurrentUnit = Instantiate(KnightPrefab, SelectedBarracks.transform.Find("Unit Spawn Point").transform.position, SelectedBarracks.transform.Find("Unit Spawn Point").transform.rotation);
+                }
+                else if (Input.GetKeyDown(KeyCode.Alpha2))
+                {
+                    Currency -= 100;
+                    CurrentUnit = Instantiate(ArcherPrefab, SelectedBarracks.transform.Find("Unit Spawn Point").transform.position, SelectedBarracks.transform.Find("Unit Spawn Point").transform.rotation);
+                }
+                else if (Input.GetKeyDown(KeyCode.Alpha3))
+                {
+                    Currency -= 100;
+                    CurrentUnit = Instantiate(PikemanPrefab, SelectedBarracks.transform.Find("Unit Spawn Point").transform.position, SelectedBarracks.transform.Find("Unit Spawn Point").transform.rotation);
+                }
+                else if (Input.GetKeyDown(KeyCode.Alpha4))
+                {
+                    Currency -= 100;
+                    CurrentUnit = Instantiate(WizardPrefab, SelectedBarracks.transform.Find("Unit Spawn Point").transform.position, SelectedBarracks.transform.Find("Unit Spawn Point").transform.rotation);
+                }
+            }
+            else
+            {
+                if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.Alpha4))
+                {
+                    StartCoroutine(BarracksBlocked());
+                }
+            }
+        }
+    }
+
+    #endregion
+
     #region Game Running
 
     bool IsMainTowerStanding()
@@ -413,7 +578,7 @@ public class GameManager : MonoBehaviour
 
                 float RandomSpawn = Random.Range(0, SpawnGates.Length - 1);
 
-                //StartCoroutine(SpawnEnemies((int)RandomEnemy, (int)RandomSpawn));
+                StartCoroutine(SpawnEnemies((int)RandomEnemy, (int)RandomSpawn));
             }
         }
         else
@@ -424,6 +589,8 @@ public class GameManager : MonoBehaviour
 
         UIWave.text = "WAVE " + Wave;
     }
+
+
 
     #endregion
 
@@ -903,6 +1070,27 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    void DisplayAutoTarget()
+    {
+        if (!PlayerHasLost)
+        {
+            UIAutoAttack.gameObject.SetActive(true);
+            switch (AutoAttack)
+            {
+                case true:
+                    UIAutoAttack.text = "Auto Attack On";
+                    break;
+                case false:
+                    UIAutoAttack.text = "Auto Attack Off";
+                    break;
+            }
+        }
+        else
+        {
+            UIAutoAttack.gameObject.SetActive(false);
+        }
+    }
+
     #endregion
 
     #region Enemies
@@ -925,143 +1113,7 @@ public class GameManager : MonoBehaviour
 
     #endregion
 
-    void Click()
-    {
-        // Left Click
-        if (Input.GetMouseButtonDown(0))
-        {
-            RaycastHit ObjectInfo = new RaycastHit();
-            bool hit = Physics.Raycast(MainCam.ScreenPointToRay(Input.mousePosition), out ObjectInfo);
-
-            if (hit)
-            {
-                Debug.Log(hit);
-                switch (ObjectInfo.transform.gameObject.tag)
-                {
-                    // Sets the Unit as the current unit (The unit to be controlled)
-                    case "Player":
-                        Debug.Log("Current Unit is " + ObjectInfo.transform.gameObject.name);
-                        CurrentUnit = ObjectInfo.transform.gameObject;
-
-                        BarracksSelected = false;
-                        break;
-
-                    // Sets the enemy unit as the current unit's attack target
-                    case "Enemy":
-                        // Can only set an attack target if there is a current unit
-                        if (CurrentUnit != null)
-                        {
-                            CurrentUnitScript.AttackTarget = ObjectInfo.transform.gameObject;
-                            Debug.Log("Set " + CurrentUnit + "'s target to " + CurrentUnitScript.AttackTarget);
-                        }
-
-                        BarracksSelected = false;
-                        break;
-
-                        // Selects the barracks so that units may be spawned
-                    case "Barracks":
-                        Debug.Log("BarracksClicked");
-                        BarracksSelected = true;
-                        CurrentUnit = null;
-
-                        SelectedBarracks = ObjectInfo.transform.gameObject;
-                        break;
-
-                        // Selects a point for the selected unit to move
-                    case "Ground":
-                        if (CurrentUnit != null)
-                        {
-                            CurrentUnitScript.HoldPosition = ObjectInfo.point;
-
-                            if (CurrentUnitScript.UnitLeader != null)
-                            {
-                                CurrentUnitScript.FollowOffset = CurrentUnitScript.HoldPosition - CurrentUnitScript.UnitLeader.transform.position;
-                            }
-
-                            /*
-                            CurrentUnitScript.agent.isStopped = false;
-                            CurrentUnitScript.AttackTarget = null;
-                            // If the point clicked is within the castle walls
-                            if ((ObjectInfo.point.x <= 100 && ObjectInfo.point.x >= -100) && (ObjectInfo.point.z <= 100 && ObjectInfo.point.z >= -100))
-                            {
-                                // Move the Unit
-                                CurrentUnitScript.agent.SetDestination(ObjectInfo.point);
-                                Debug.Log("Move " + CurrentUnit.gameObject + " to " + ObjectInfo.point);
-                            }*/                          
-                        }
-                        BarracksSelected = false;
-                        break;
-                }
-            }
-        }
-        // Right Click
-        else if (Input.GetMouseButtonDown(1))
-        {
-            RaycastHit ObjectInfo = new RaycastHit();
-            bool hit = Physics.Raycast(MainCam.ScreenPointToRay(Input.mousePosition), out ObjectInfo);
-
-            if (hit)
-            {
-                Debug.Log(hit);
-                switch (ObjectInfo.transform.gameObject.tag)
-                {
-                    case "Player":
-                        if (CurrentUnit != null)
-                        {
-                            CurrentUnitScript.UnitLeader = ObjectInfo.transform.gameObject;
-                            CurrentUnitScript.FollowOffset = CurrentUnitScript.HoldPosition - CurrentUnitScript.UnitLeader.transform.position;
-                        }
-                        break;
-                    case "Ground":
-                        if (CurrentUnit != null)
-                        {
-                            CurrentUnitScript.UnitLeader = null;
-                        }
-                        break;
-                }
-            }
-        }
-    }
-
-    void SpawnUnits(GameObject Barracks)
-    {
-        // Cost of spawning a unit is 100
-        if (Currency >= 100)
-        {
-            if (SelectedBarracks.transform.gameObject.GetComponent<Spawner>().UnitOnGate == false)
-            {
-                if (Input.GetKeyDown(KeyCode.Alpha1))
-                {
-                    Currency -= 100;
-                    CurrentUnit = Instantiate(KnightPrefab, SelectedBarracks.transform.Find("Unit Spawn Point").transform.position, SelectedBarracks.transform.Find("Unit Spawn Point").transform.rotation);
-                }
-                else if (Input.GetKeyDown(KeyCode.Alpha2))
-                {
-                    Currency -= 100;
-                    CurrentUnit = Instantiate(ArcherPrefab, SelectedBarracks.transform.Find("Unit Spawn Point").transform.position, SelectedBarracks.transform.Find("Unit Spawn Point").transform.rotation);
-                }
-                else if (Input.GetKeyDown(KeyCode.Alpha3))
-                {
-                    Currency -= 100;
-                    CurrentUnit = Instantiate(PikemanPrefab, SelectedBarracks.transform.Find("Unit Spawn Point").transform.position, SelectedBarracks.transform.Find("Unit Spawn Point").transform.rotation);
-                }
-                else if (Input.GetKeyDown(KeyCode.Alpha4))
-                {
-                    Currency -= 100;
-                    CurrentUnit = Instantiate(WizardPrefab, SelectedBarracks.transform.Find("Unit Spawn Point").transform.position, SelectedBarracks.transform.Find("Unit Spawn Point").transform.rotation);
-                }
-            }
-            else
-            {
-                if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.Alpha4))
-                {
-                    StartCoroutine(BarracksBlocked());
-                }
-            }
-        }
-    }
-
-    
+    #region Get Functions
 
     // Gets which kind of script is on the a particular unit
     public Unit GetUnitClass(GameObject Unit)
@@ -1109,4 +1161,38 @@ public class GameManager : MonoBehaviour
             return null;
         }
     }
+
+    void SwitchToNextUnit(int IndexChange)
+    {
+        // If there are player units
+        if (AllPlayerUnits.Length > 0)
+        {
+            // for every player unit
+            for (int x = 0; x < AllPlayerUnits.Length; x++)
+            {
+                // If the player unit being looked at is the current unit
+                if (AllPlayerUnits[x] == CurrentUnit)
+                {
+                    // If this is the last unit in the array
+                    if (x + IndexChange >= AllPlayerUnits.Length)
+                    {
+                        UnitIndex = 0;
+                    }
+                    // If this is the first unit in the array
+                    else if (x + IndexChange < 0)
+                    {
+                        UnitIndex = AllPlayerUnits.Length - 1;
+                    }
+                    else
+                    {
+                        UnitIndex = x + IndexChange;
+                    }
+
+                }
+            }
+            CurrentUnit = AllPlayerUnits[UnitIndex];
+        }
+    }
+
+    #endregion
 }

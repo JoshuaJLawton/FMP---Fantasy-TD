@@ -41,6 +41,7 @@ public class HoldPosition : State
         // Otherwise the unit stays at their Hold Position until they see an enemy 
         // They attack the enemy and then return to their hold position
 
+        // If the unit has a leader
         if (OwnerScript.UnitLeader != null)
         {
             OwnerScript.agent.SetDestination(OwnerScript.UnitLeader.transform.position + OwnerScript.FollowOffset);
@@ -50,15 +51,24 @@ public class HoldPosition : State
                 OwnerScript.AttackTarget = OwnerScript.GetUnitClass(OwnerScript.UnitLeader).AttackTarget;
             }
         }
-        else if (OwnerScript.DetectEnemy() == null)
+        // If the unit has no leader and autoattack is enabled
+        else if (OwnerScript.GM.AutoAttack)
+        {
+            // If the unit does not detect an enemy
+            if (OwnerScript.DetectEnemy() == null)
+            {
+                OwnerScript.agent.SetDestination(OwnerScript.HoldPosition);
+            }
+            else
+            {
+                OwnerScript.AttackTarget = OwnerScript.DetectEnemy();
+            }
+        }
+        // If the unit has no leader and autoattack is not enabled
+        else
         {
             OwnerScript.agent.SetDestination(OwnerScript.HoldPosition);
         }
-        else
-        {
-            OwnerScript.AttackTarget = OwnerScript.DetectEnemy();
-        }
-
 
         //OwnerScript.agent.SetDestination(OwnerScript.HoldPosition);
 
@@ -111,15 +121,10 @@ public class LocateTarget : State
         /////////////////////////////////////////////////////////////////////////////////////////
         ///////////////////////////////////////// EXECUTE ///////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////////
-
-        
-
-        
+       
         // Sets the attack target
         OwnerScript.AttackTarget = OwnerScript.GetAITarget();
         
-
-
         /////////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////// EXIT CLAUSES ////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////////
