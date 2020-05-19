@@ -123,18 +123,39 @@ public class Unit : MonoBehaviour
 
     #region Attacking Functions
 
+
     public bool CanAttack()
     {
         //Debug.DrawRay(this.transform.position, this.transform.forward * Range, Color.red);
         //Debug.DrawRay(this.transform.position, (AttackTarget.transform.position - this.transform.position).normalized * Range, Color.blue);
 
+        
+        // CLOSE RANGE UNITS REQUIRE A BOOST TO THEIR RANGE IN ORDER TO REGISTER AN ATTACK ON BUILDINGS
+        if (this.gameObject.GetComponent<E_Knight>() != null || this.gameObject.GetComponent<E_Pikeman>() != null)
+        {
+            switch (AttackTarget.gameObject.tag)
+            {
+                case "Income":
+                case "Barracks":
+                case "Apothecary":
+                case "Main Tower":
+                    Range = 10;
+                    break;
+                default:
+                    Range = 3;
+                    break;
+            }
+        }
+        
 
         Vector3 THIS = new Vector3(this.transform.position.x, this.transform.position.y + 1, this.transform.position.z);
         Vector3 TARGET = new Vector3(AttackTarget.transform.position.x, AttackTarget.transform.position.y + 1, AttackTarget.transform.position.z);
-        
+
+        Vector3 Forward = new Vector3(transform.forward.x, this.transform.forward.y, this.transform.forward.z);
+
         RaycastHit ObjectInfo = new RaycastHit();
-        bool hit = Physics.Raycast(THIS, (TARGET - THIS).normalized * Range, out ObjectInfo);
-        Debug.DrawRay(THIS, (TARGET - THIS).normalized * Range, Color.red);
+        bool hit = Physics.Raycast(THIS, Forward /*(TARGET - THIS).normalized*/ * Range, out ObjectInfo);
+        Debug.DrawRay(THIS, Forward /*(TARGET - THIS).normalized*/ * Range, Color.red);
 
         // If the attack target is in attack range
         if (Vector3.Distance(THIS, TARGET) < Range)
@@ -151,9 +172,9 @@ public class Unit : MonoBehaviour
                 else if (ObjectInfo.transform.gameObject.tag == this.gameObject.tag)
                 {
                     Vector3 FRIENDLY = new Vector3(ObjectInfo.transform.position.x, ObjectInfo.transform.position.y + 1, ObjectInfo.transform.position.z);
-                    RaycastHit ObjectInfo2 = new RaycastHit();
+                    //RaycastHit ObjectInfo2 = new RaycastHit();
                     // Shoots a raycast out the remainder of the way to see if it hits the target
-                    bool hit2 = Physics.Raycast(FRIENDLY, (TARGET - THIS).normalized * (Range - Vector3.Distance(THIS, FRIENDLY)), out ObjectInfo);
+                    bool hit2 = Physics.Raycast(FRIENDLY, transform.forward /*(TARGET - THIS).normalized*/ * (Range - Vector3.Distance(THIS, FRIENDLY)), out ObjectInfo);
                     if (hit2)
                     {
                         return true;
@@ -162,12 +183,11 @@ public class Unit : MonoBehaviour
                     {
                         return false;
                     }
-
                 }
                 else
                 {
                     return false;
-                }                
+                }
             }
             else
             {
@@ -180,6 +200,7 @@ public class Unit : MonoBehaviour
         }
     }
 
+        
 
     // CANNOT  USE COROUTINE IN STATE SO PASS IT THROUGH THIS FUNCTION
     public void StartAttackRoutine()
@@ -362,6 +383,36 @@ public class Unit : MonoBehaviour
 
     #region AI Functions
 
+    /*
+    public GameObject FindLeader()
+    {
+        GameObject CurrentLeader = null;
+        GameObject[] PotentialLeaders;
+
+        // First check all friendly Units
+        PotentialLeaders = GameObject.FindGameObjectsWithTag("Enemy");
+
+        // Checks all friendlies
+        foreach (GameObject Unit in PotentialLeaders)
+        {
+            Vector3 THIS = new Vector3(this.transform.position.x, this.transform.position.y + 1, this.transform.position.z);
+            Vector3 UNIT = new Vector3(Unit.transform.position.x, Unit.transform.position.y + 1, Unit.transform.position.z);
+
+            // Is the unit within sight distance?
+            if (Vector3.Distance(THIS, UNIT) < 50)
+            {
+                // If this is the first unit being looked at
+                if (CurrentLeader == null)
+                {
+                    CurrentLeader = Unit;
+                }
+
+
+            }
+        }
+    }
+    */
+
     public GameObject GetAITarget()
     {
         GameObject CurrentTarget = null;
@@ -372,8 +423,7 @@ public class Unit : MonoBehaviour
 
         // Checks every opposition unit
         foreach (GameObject Unit in PotentialTargets)
-        {
-            
+        {           
             Vector3 THIS = new Vector3(this.transform.position.x, this.transform.position.y + 1, this.transform.position.z);
             Vector3 UNIT = new Vector3(Unit.transform.position.x, Unit.transform.position.y + 1, Unit.transform.position.z);
 

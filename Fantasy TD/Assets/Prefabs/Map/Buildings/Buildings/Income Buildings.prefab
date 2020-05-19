@@ -249,6 +249,7 @@ GameObject:
   - component: {fileID: 1163449667690171910}
   - component: {fileID: 9066818455662011738}
   - component: {fileID: 5432095331249649942}
+  - component: {fileID: 6859237698137973306}
   m_Layer: 0
   m_Name: Income Buildings
   m_TagString: Income
@@ -370,6 +371,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Health: 0
+--- !u!65 &6859237698137973306
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4582866360013347493}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 5, y: 5, z: 9}
+  m_Center: {x: 0, y: 2.5, z: -0.25}
 --- !u!1 &4583115463346065887
 GameObject:
   m_ObjectHideFlags: 0

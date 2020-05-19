@@ -9599,6 +9599,7 @@ MonoBehaviour:
   UICurrency: {fileID: 0}
   UIGameOver: {fileID: 0}
   UIViewPoint: {fileID: 1572675867}
+  UIPrompt: {fileID: 0}
   UIBarracksBlocked: {fileID: 0}
   UnitHealthBar: {fileID: 0}
   CurrentUnitName: {fileID: 0}
@@ -36915,8 +36916,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: -125}
-  m_SizeDelta: {x: 500, y: 150}
+  m_AnchoredPosition: {x: 0, y: -160}
+  m_SizeDelta: {x: 500, y: 225}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2083128341
 MonoBehaviour:
@@ -36970,7 +36971,13 @@ MonoBehaviour:
     "Fantasty Village Pack" Version 1.3 - TARBO STUDIO
 
 
-    "UI Adventure Pack" - Kenney Assets'
+    "UI Adventure Pack" - Kenney Assets
+
+
+    Spacial UI - Joshua Lawton
+
+
+    Skybox - Kendall Weaver'
 --- !u!222 &2083128343
 CanvasRenderer:
   m_ObjectHideFlags: 0

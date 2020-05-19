@@ -413,7 +413,7 @@ public class GameManager : MonoBehaviour
 
                 float RandomSpawn = Random.Range(0, SpawnGates.Length - 1);
 
-                StartCoroutine(SpawnEnemies((int)RandomEnemy, (int)RandomSpawn));
+                //StartCoroutine(SpawnEnemies((int)RandomEnemy, (int)RandomSpawn));
             }
         }
         else
