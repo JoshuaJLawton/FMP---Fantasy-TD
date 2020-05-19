@@ -1287,6 +1287,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6805369547620005180, guid: 68376ec38c422324180b8dedbb317fe1,
+        type: 3}
+      propertyPath: m_RenderMode
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 68376ec38c422324180b8dedbb317fe1, type: 3}
 --- !u!1001 &79080885
@@ -35877,6 +35882,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_NavMeshLayer
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6805369547620005180, guid: 68376ec38c422324180b8dedbb317fe1,
+        type: 3}
+      propertyPath: m_RenderMode
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 68376ec38c422324180b8dedbb317fe1, type: 3}

@@ -371,6 +371,43 @@ public class GameManager : MonoBehaviour
         MainMenuPanel.SetActive(true);
     }
 
+    string GetControlTitle(int Index)
+    {
+        string Text = null;
+        switch (Index)
+        {
+            case 0:
+                Text = "Left Click";
+                break;
+            case 1:
+                Text = "Right Click";
+                break;
+        }
+
+        return Text;
+    }
+
+    string GetControlText(int Index)
+    {
+        string Text = null;
+        switch (Index)
+        {
+            case 0:
+                Text = "Friendly Unit - Select that unit\nEnemy Unit -Target that Unit for attack\nGround - Move unit to location selected";
+                break;
+            case 1:
+                Text = "Friendly Unit - ";
+                break;
+        }
+
+        return Text;
+    }
+
+    void ScrollControls()
+    {
+
+    }
+
     #endregion
 
     #region Player Input
