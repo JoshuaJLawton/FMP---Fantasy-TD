@@ -155,7 +155,7 @@ public class Unit : MonoBehaviour
 
         RaycastHit ObjectInfo = new RaycastHit();
         bool hit = Physics.Raycast(THIS, Forward /*(TARGET - THIS).normalized*/ * Range, out ObjectInfo);
-        Debug.DrawRay(THIS, Forward /*(TARGET - THIS).normalized*/ * Range, Color.red);
+        //Debug.DrawRay(THIS, Forward /*(TARGET - THIS).normalized*/ * Range, Color.red);
 
         // If the attack target is in attack range
         if (Vector3.Distance(THIS, TARGET) < Range)

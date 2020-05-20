@@ -22,6 +22,12 @@ public class GameManager : MonoBehaviour
     bool IsLoadingLevel;
     public GameObject LoadingBar;
 
+    public Sprite[] Tutorials = new Sprite[18];
+    public Image OpenTutorial;
+    public int TutorialIndex;
+    public Text UITutorialIndex;
+
+
     [Header("Game Management")]
     public int SpawnCount;
     public bool WaveInProgress;
@@ -113,6 +119,9 @@ public class GameManager : MonoBehaviour
                 ProgrammingCredits.SetActive(false);
                 GameDesignCreditsTitle.SetActive(false);
                 GameDesignCredits.SetActive(false);
+
+                TutorialIndex = 0;
+
                 break;
             case "Gamefield":
                 IsLoadingLevel = false;
@@ -151,10 +160,14 @@ public class GameManager : MonoBehaviour
             case "Main Menu":
                 MoveMenuCamera();
                 RunButtons();
+
                 if (CreditsPanel.activeSelf)
                 {
                     PlayCredits();
                 }
+
+                ScrollTutorials();
+
                 break;
 
             case "Gamefield":
@@ -290,7 +303,39 @@ public class GameManager : MonoBehaviour
 
     // Controls Panel
 
+    void ScrollTutorials()
+    {
+        if (ControlsPanel.activeSelf)
+        {
+            if (Input.GetKeyDown(KeyCode.A))
+            {
+                if (TutorialIndex == 0)
+                {
+                    TutorialIndex = 17;
+                }
+                else
+                {
+                    TutorialIndex--;
+                }
 
+            }
+            else if (Input.GetKeyDown(KeyCode.D))
+            {
+                if (TutorialIndex == 17)
+                {
+                    TutorialIndex = 0;
+                }
+                else
+                {
+                    TutorialIndex++;
+                }
+            }
+        }
+
+        OpenTutorial.GetComponent<Image>().sprite = Tutorials[TutorialIndex];
+        UITutorialIndex.text = (TutorialIndex + 1) + " / 18";
+
+    }
 
     // Credits Panel
 
@@ -385,27 +430,6 @@ public class GameManager : MonoBehaviour
         }
 
         return Text;
-    }
-
-    string GetControlText(int Index)
-    {
-        string Text = null;
-        switch (Index)
-        {
-            case 0:
-                Text = "Friendly Unit - Select that unit\nEnemy Unit -Target that Unit for attack\nGround - Move unit to location selected";
-                break;
-            case 1:
-                Text = "Friendly Unit - ";
-                break;
-        }
-
-        return Text;
-    }
-
-    void ScrollControls()
-    {
-
     }
 
     #endregion

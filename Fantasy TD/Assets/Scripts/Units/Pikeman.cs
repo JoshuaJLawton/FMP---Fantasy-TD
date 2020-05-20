@@ -22,7 +22,7 @@ public class Pikeman : Unit
         // Pikeman has close range
         Range = 3;
         // Pikeman has low attack speed
-        AttackSpeed = 3.5f; // 2.5 Seconds
+        AttackSpeed = 4f; // 4 Seconds
 
         agent = this.gameObject.GetComponent<NavMeshAgent>();
     }

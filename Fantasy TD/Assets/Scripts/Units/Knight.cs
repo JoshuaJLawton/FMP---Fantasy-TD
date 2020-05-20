@@ -21,8 +21,8 @@ public class Knight : Unit
         AttackDamage = 10;
         // Knight has close range
         Range = 3;
-        // Knight has medium attack speed
-        AttackSpeed = 1; // 1 Second
+        // Knight has fast attack speed
+        AttackSpeed = 1.5f; // 1 Second
 
         agent = this.gameObject.GetComponent<NavMeshAgent>();
     }

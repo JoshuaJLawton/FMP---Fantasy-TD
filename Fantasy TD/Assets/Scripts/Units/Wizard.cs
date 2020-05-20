@@ -25,7 +25,7 @@ public class Wizard : Unit
         // Wizard has medium range
         Range = 25;
         // Wizard has medium attack speed
-        AttackSpeed = 3.5f; // 3.5 Seconds
+        AttackSpeed = 3f; // 3 Seconds
         // Spells fly slower
         ProjectileSpeed = 50;
 
