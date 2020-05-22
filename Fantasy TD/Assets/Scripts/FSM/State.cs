@@ -43,7 +43,7 @@ public class HoldPosition : State
 
         // If the unit has a leader
         if (OwnerScript.UnitLeader != null)
-        {
+        {            
             OwnerScript.agent.SetDestination(OwnerScript.UnitLeader.transform.position + OwnerScript.FollowOffset);
 
             if (OwnerScript.GetUnitClass(OwnerScript.UnitLeader).AttackTarget != null)
@@ -162,7 +162,7 @@ public class Move : State
     public void Enter()
     {
         OwnerScript.agent.isStopped = false;
-        Debug.Log(Owner + "Is Attacking" + OwnerScript.AttackTarget);
+        //Debug.Log(Owner + "Is Attacking" + OwnerScript.AttackTarget);
     }
 
     public void Execute()
@@ -209,7 +209,7 @@ public class Move : State
         // Change to Locate Target State
         if (OwnerScript.AttackTarget == null)
         {
-            Debug.Log(Owner + " has lost their target");
+            //Debug.Log(Owner + " has lost their target");
             switch (Owner.tag)
             {
                 case "Player":
@@ -238,7 +238,7 @@ public class Move : State
         // Change to Attack State
         else if (OwnerScript.CanAttack())
         {
-            Debug.Log(Owner + " is in attack range");
+            //Debug.Log(Owner + " is in attack range");
             OwnerScript.AIBehaviour.ChangeState(new Attack(Owner, OwnerScript));
         }
     }
@@ -281,11 +281,12 @@ public class Attack : State
         // If there is a target
         if (OwnerScript.AttackTarget != null)
         {
-            
+            /*
             Vector3 THIS = new Vector3(Owner.transform.position.x, Owner.transform.position.y + 1, Owner.transform.position.z);
             Vector3 TARGET = new Vector3(OwnerScript.AttackTarget.transform.position.x, OwnerScript.AttackTarget.transform.position.y + 1, OwnerScript.AttackTarget.transform.position.z);
             RaycastHit ObjectInFront = new RaycastHit();
             bool Hit = Physics.Raycast(THIS, Owner.transform.forward, out ObjectInFront, OwnerScript.Range);
+            */
 
             // Turn to face the enemy
             OwnerScript.FaceEnemy();
@@ -304,7 +305,7 @@ public class Attack : State
         // Change to Locate Target State
         if (OwnerScript.AttackTarget == null)
         {
-            Debug.Log("Lost Attack Target");
+            //Debug.Log("Lost Attack Target");
             switch (Owner.tag)
             {
                 case "Player":
@@ -351,6 +352,6 @@ public class Attack : State
     public void Exit()
     {
         OwnerScript.agent.isStopped = true;
-        Debug.Log("Exiting Attack State");
+        //Debug.Log("Exiting Attack State");
     }
 }

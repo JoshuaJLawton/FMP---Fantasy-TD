@@ -13,7 +13,7 @@ public class GameManager : MonoBehaviour
     public Camera MenuCamera;
 
     public GameObject MainMenuPanel, ControlsPanel, CreditsPanel, LoadingPanel;
-    public Button StartGameBTN, OpenControlsBTN, OpenCreditsBTN;
+    public Button StartGameBTN, OpenControlsBTN, OpenCreditsBTN, CloseGameBTN;
     public Button ControlsReturnBTN, CreditsReturnBTN;
     public GameObject MusicCreditsTitle, MusicCredits, ArtCreditsTitle, ArtCredits, ProgrammingCreditsTitle, ProgrammingCredits, GameDesignCreditsTitle, GameDesignCredits;
 
@@ -79,6 +79,9 @@ public class GameManager : MonoBehaviour
 
     public Text UISeconds, UIWave;
 
+    public GameObject UIButtons, UIButtonPrompt;
+    public Button UIKnight, UIArcher, UIPikeman, UIWizard;
+
     [Header("Cameras")]
     public Camera MainCam;
     public Camera[] InCam = new Camera[4];
@@ -143,7 +146,7 @@ public class GameManager : MonoBehaviour
                 UIBarracksBlocked.SetActive(false);
                 UIPrompt.gameObject.SetActive(false);
 
-                Currency = 1000;
+                Currency = 500;
                 SpawnGates = GameObject.FindGameObjectsWithTag("Spawn Gate");
 
                 AutoAttack = false;
@@ -194,6 +197,7 @@ public class GameManager : MonoBehaviour
                 DisplayWaves();
                 DisplayPrompt();
                 DisplayAutoTarget();
+                DisplayBarracksBlocked();
 
                 ReturnToMenu();
 
@@ -214,10 +218,12 @@ public class GameManager : MonoBehaviour
 
                 if (SelectedBarracks != null)
                 {
-                    SpawnUnits(SelectedBarracks);
+                    SpawnUnitsKeys();
+                    
                 }
 
-                
+                RunSpawnUnitsButtons();
+
                 break;
         }  
     }
@@ -229,7 +235,7 @@ public class GameManager : MonoBehaviour
     void MoveMenuCamera()
     {
         //POSITION -31.8, 75, 103.7 ROTATION 35, 20, 0
-        MenuCamera.transform.RotateAround(new Vector3(0, 0, 0), Vector3.up, 15 * Time.deltaTime);
+        MenuCamera.transform.RotateAround(new Vector3(0, 0, 0), Vector3.up, 10 * Time.deltaTime);
     }
 
     IEnumerator MoveMenuCam()
@@ -246,6 +252,8 @@ public class GameManager : MonoBehaviour
 
         ControlsReturnBTN.onClick.AddListener(Return);
         CreditsReturnBTN.onClick.AddListener(Return);
+
+        CloseGameBTN.onClick.AddListener(CloseGame);
     }
 
     // Main Menu Panel
@@ -432,106 +440,117 @@ public class GameManager : MonoBehaviour
         return Text;
     }
 
+    void CloseGame()
+    {
+        Debug.Log("Close Game");
+        Application.Quit();
+    }
+
     #endregion
 
     #region Player Input
 
     void PlayerInput()
     {
-        // Left Click
-        if (Input.GetMouseButtonDown(0))
+        // Extra check to make sure unit spawn panel isn't showing
+        if (!Input.GetKey(KeyCode.LeftShift))
         {
-            RaycastHit ObjectInfo = new RaycastHit();
-            bool hit = Physics.Raycast(MainCam.ScreenPointToRay(Input.mousePosition), out ObjectInfo);
-
-            if (hit)
+            // Left Click
+            if (Input.GetMouseButtonDown(0))
             {
-                Debug.Log(hit);
-                switch (ObjectInfo.transform.gameObject.tag)
+                RaycastHit ObjectInfo = new RaycastHit();
+                bool hit = Physics.Raycast(MainCam.ScreenPointToRay(Input.mousePosition), out ObjectInfo);
+
+                if (hit)
                 {
-                    // Sets the Unit as the current unit (The unit to be controlled)
-                    case "Player":
-                        Debug.Log("Current Unit is " + ObjectInfo.transform.gameObject.name);
-                        CurrentUnit = ObjectInfo.transform.gameObject;
+                    Debug.Log(hit);
+                    switch (ObjectInfo.transform.gameObject.tag)
+                    {
+                        // Sets the Unit as the current unit (The unit to be controlled)
+                        case "Player":
+                            Debug.Log("Current Unit is " + ObjectInfo.transform.gameObject.name);
+                            CurrentUnit = ObjectInfo.transform.gameObject;
 
-                        BarracksSelected = false;
-                        break;
+                            BarracksSelected = false;
+                            break;
 
-                    // Sets the enemy unit as the current unit's attack target
-                    case "Enemy":
-                        // Can only set an attack target if there is a current unit
-                        if (CurrentUnit != null)
-                        {
-                            CurrentUnitScript.AttackTarget = ObjectInfo.transform.gameObject;
-                            Debug.Log("Set " + CurrentUnit + "'s target to " + CurrentUnitScript.AttackTarget);
-                        }
-
-                        BarracksSelected = false;
-                        break;
-
-                    // Selects the barracks so that units may be spawned
-                    case "Barracks":
-                        Debug.Log("BarracksClicked");
-                        BarracksSelected = true;
-                        CurrentUnit = null;
-
-                        SelectedBarracks = ObjectInfo.transform.gameObject;
-                        break;
-
-                    // Selects a point for the selected unit to move
-                    case "Ground":
-                        if (CurrentUnit != null)
-                        {
-                            CurrentUnitScript.HoldPosition = ObjectInfo.point;
-
-                            if (CurrentUnitScript.UnitLeader != null)
+                        // Sets the enemy unit as the current unit's attack target
+                        case "Enemy":
+                            // Can only set an attack target if there is a current unit
+                            if (CurrentUnit != null)
                             {
-                                CurrentUnitScript.FollowOffset = CurrentUnitScript.HoldPosition - CurrentUnitScript.UnitLeader.transform.position;
+                                CurrentUnitScript.AttackTarget = ObjectInfo.transform.gameObject;
+                                Debug.Log("Set " + CurrentUnit + "'s target to " + CurrentUnitScript.AttackTarget);
                             }
 
-                            /*
-                            CurrentUnitScript.agent.isStopped = false;
-                            CurrentUnitScript.AttackTarget = null;
-                            // If the point clicked is within the castle walls
-                            if ((ObjectInfo.point.x <= 100 && ObjectInfo.point.x >= -100) && (ObjectInfo.point.z <= 100 && ObjectInfo.point.z >= -100))
-                            {
-                                // Move the Unit
-                                CurrentUnitScript.agent.SetDestination(ObjectInfo.point);
-                                Debug.Log("Move " + CurrentUnit.gameObject + " to " + ObjectInfo.point);
-                            }*/
-                        }
-                        BarracksSelected = false;
-                        break;
-                }
-            }
-        }
-        // Right Click
-        else if (Input.GetMouseButtonDown(1))
-        {
-            RaycastHit ObjectInfo = new RaycastHit();
-            bool hit = Physics.Raycast(MainCam.ScreenPointToRay(Input.mousePosition), out ObjectInfo);
+                            BarracksSelected = false;
+                            break;
 
-            if (hit)
+                        // Selects a point for the selected unit to move
+                        case "Ground":
+                            if (CurrentUnit != null)
+                            {
+                                CurrentUnitScript.HoldPosition = ObjectInfo.point;
+
+                                if (CurrentUnitScript.UnitLeader != null)
+                                {
+                                    CurrentUnitScript.FollowOffset = CurrentUnitScript.HoldPosition - CurrentUnitScript.UnitLeader.transform.position;
+                                }
+                            }
+                            BarracksSelected = false;
+                            break;
+                    }
+                }
+            }
+            // Right Click
+            else if (Input.GetMouseButtonDown(1))
             {
-                Debug.Log(hit);
-                switch (ObjectInfo.transform.gameObject.tag)
+                RaycastHit ObjectInfo = new RaycastHit();
+                bool hit = Physics.Raycast(MainCam.ScreenPointToRay(Input.mousePosition), out ObjectInfo);
+
+                if (hit)
                 {
-                    case "Player":
-                        if (CurrentUnit != null)
-                        {
-                            CurrentUnitScript.UnitLeader = ObjectInfo.transform.gameObject;
-                            CurrentUnitScript.FollowOffset = CurrentUnitScript.HoldPosition - CurrentUnitScript.UnitLeader.transform.position;
-                        }
-                        break;
-                    case "Ground":
-                        if (CurrentUnit != null)
-                        {
-                            CurrentUnitScript.UnitLeader = null;
-                        }
-                        break;
+                    Debug.Log(hit);
+                    switch (ObjectInfo.transform.gameObject.tag)
+                    {
+                        case "Player":
+                            if (CurrentUnit != null)
+                            {
+                                CurrentUnitScript.UnitLeader = ObjectInfo.transform.gameObject;
+                                CurrentUnitScript.FollowOffset = (CurrentUnitScript.HoldPosition - CurrentUnitScript.UnitLeader.transform.position);
+
+
+                                /*
+                                // If the offset is further than 5 points away
+                                if (Vector3.Distance(CurrentUnitScript.FollowOffset, CurrentUnitScript.UnitLeader.transform.position) >= 5.5f)
+                                {
+                                    do
+                                    {
+                                        CurrentUnitScript.FollowOffset = (CurrentUnitScript.FollowOffset - CurrentUnitScript.UnitLeader.transform.position) / 0.1f;
+                                    }
+                                    while (Vector3.Distance(CurrentUnitScript.FollowOffset, CurrentUnitScript.UnitLeader.transform.position) >= 5.5f);
+                                }
+                                else
+                                {
+                                    CurrentUnitScript.FollowOffset = CurrentUnitScript.HoldPosition - CurrentUnitScript.UnitLeader.transform.position;
+                                }
+                                */
+
+
+
+                            }
+                            break;
+                        case "Ground":
+                            if (CurrentUnit != null)
+                            {
+                                CurrentUnitScript.UnitLeader = null;
+                            }
+                            break;
+                    }
                 }
             }
         }
+        
 
         if (Input.GetKeyDown(KeyCode.Tab))
         {
@@ -546,15 +565,117 @@ public class GameManager : MonoBehaviour
         {
             SwitchToNextUnit(1);
         }
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            LoadingBar.SetActive(true);
+            StartCoroutine(LoadAsynchronously(0, 2));
+        }
+    }
+
+    void RunSpawnUnitsButtons()
+    {
+        if (PlayerHasLost || SelectedBarracks == null)
+        {
+            UIButtons.SetActive(false);            
+        }
+        else
+        {
+            UIButtons.SetActive(true);
+            UIKnight.onClick.AddListener(SpawnKnightButton);
+            UIArcher.onClick.AddListener(SpawnArcherButton);
+            UIPikeman.onClick.AddListener(SpawnPikemanButton);
+            UIWizard.onClick.AddListener(SpawnWizardButton);
+        }
+
+        if (Input.GetKey(KeyCode.LeftShift))
+        {
+            UIButtonPrompt.SetActive(false);
+            UIKnight.gameObject.SetActive(true);
+            UIArcher.gameObject.SetActive(true);
+            UIPikeman.gameObject.SetActive(true);
+            UIWizard.gameObject.SetActive(true);
+        }
+        else
+        {
+            UIButtonPrompt.SetActive(true);
+            UIKnight.gameObject.SetActive(false);
+            UIArcher.gameObject.SetActive(false);
+            UIPikeman.gameObject.SetActive(false);
+            UIWizard.gameObject.SetActive(false);
+        }
+        
+    }
+
+    bool UnitSpawned = false;
+
+    IEnumerator SpawnUnit(GameObject Prefab)
+    {
+        if (!UnitSpawned)
+        {
+            UnitSpawned = true;
+            if (Currency >= 100)
+            {
+                if (!UnitOnGate(SelectedBarracks))
+                {
+                    Currency -= 100;
+                    CurrentUnit = Instantiate(Prefab, SelectedBarracks.transform.Find("Unit Spawn Point").transform.position, SelectedBarracks.transform.Find("Unit Spawn Point").transform.rotation);
+                }
+            }
+        }
+        yield return new WaitForSeconds(2);
+        UnitSpawned = false;       
+    }
+
+    void SpawnKnightButton()
+    {
+        StartCoroutine(SpawnUnit(KnightPrefab));
+    }
+
+    void SpawnArcherButton()
+    {
+        if (SelectedBarracks != null && Currency >= 100)
+        {
+            if (!UnitOnGate(SelectedBarracks))
+            {
+                Currency -= 100;
+                CurrentUnit = Instantiate(ArcherPrefab, SelectedBarracks.transform.Find("Unit Spawn Point").transform.position, SelectedBarracks.transform.Find("Unit Spawn Point").transform.rotation);
+            }
+        }
+    }
+
+    void SpawnPikemanButton()
+    {
+        if (SelectedBarracks != null && Currency >= 100)
+        {
+            if (!UnitOnGate(SelectedBarracks))
+            {
+                Currency -= 100;
+                CurrentUnit = Instantiate(PikemanPrefab, SelectedBarracks.transform.Find("Unit Spawn Point").transform.position, SelectedBarracks.transform.Find("Unit Spawn Point").transform.rotation);
+            }
+        }
+    }
+
+    void SpawnWizardButton()
+    {
+        if (SelectedBarracks != null && Currency >= 100)
+        {
+            if (!UnitOnGate(SelectedBarracks))
+            {
+                Currency -= 100;
+                CurrentUnit = Instantiate(WizardPrefab, SelectedBarracks.transform.Find("Unit Spawn Point").transform.position, SelectedBarracks.transform.Find("Unit Spawn Point").transform.rotation);
+            }
+        }
     }
 
 
-    void SpawnUnits(GameObject Barracks)
+    void SpawnUnitsKeys()
     {
         // Cost of spawning a unit is 100
         if (Currency >= 100)
         {
-            if (SelectedBarracks.transform.gameObject.GetComponent<Spawner>().UnitOnGate == false)
+            //if (SelectedBarracks.transform.gameObject.GetComponent<Spawner>().UnitOnGate == false)
+            if (!UnitOnGate(SelectedBarracks))
             {
                 if (Input.GetKeyDown(KeyCode.Alpha1))
                 {
@@ -581,10 +702,45 @@ public class GameManager : MonoBehaviour
             {
                 if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.Alpha4))
                 {
-                    StartCoroutine(BarracksBlocked());
+                    //Debug.Log("Barracks Blocked");
+                    //StartCoroutine(BarracksBlocked());
                 }
             }
         }
+    }
+
+    bool UnitOnGate(GameObject Barracks)
+    {
+        bool Toggle = false;
+
+        // All player units
+        GameObject[] AllUnits = GameObject.FindGameObjectsWithTag("Player");
+
+        // For every friendly unit
+        foreach (GameObject Unit in AllUnits)
+        {
+            // If the friendly unit is within a very close range of the spawn point
+            if (Vector3.Distance(SelectedBarracks.transform.Find("Unit Spawn Point").transform.position, Unit.transform.position) <= 1.5f)
+            {
+                // There is a unit blocking the spawn point
+                return true;
+            }
+        }
+
+        AllUnits = GameObject.FindGameObjectsWithTag("Enemy");
+
+        // For every enemy unit
+        foreach (GameObject Unit in AllUnits)
+        {
+            // If the enemy unit is within a very close range of the spawn point
+            if (Vector3.Distance(SelectedBarracks.transform.Find("Unit Spawn Point").transform.position, Unit.transform.position) <= 1.5f)
+            {
+                // There is a unit blocking the spawn point
+                return true;
+            }
+        }
+
+        return Toggle;
     }
 
     #endregion
@@ -723,7 +879,7 @@ public class GameManager : MonoBehaviour
     {
         if (!PlayerHasLost)
         {
-            string Display = "Gold: " + ((int)Currency).ToString();
+            string Display = ((int)Currency).ToString();
             UICurrency.text = Display;
         }
         else
@@ -980,12 +1136,41 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    void DisplayBarracksBlocked()
+    {
+        if (!PlayerHasLost)
+        {
+            if (Input.GetKey(KeyCode.LeftShift))
+            {
+                if (UnitOnGate(SelectedBarracks))
+                {
+                    UIBarracksBlocked.SetActive(true);
+                }
+                else
+                {
+                    UIBarracksBlocked.SetActive(false);
+                }
+            }
+            else
+            {
+                UIBarracksBlocked.SetActive(false);
+            }
+        }
+        else
+        {
+            UIBarracksBlocked.SetActive(false);
+        }
+        
+    }
+
+    /*
     IEnumerator BarracksBlocked()
     {
         UIBarracksBlocked.SetActive(true);
         yield return new WaitForSeconds(1.5f);
         UIBarracksBlocked.SetActive(false);
     }
+    */
 
     void DisplayCurrentUnitUI()
     {
@@ -1079,7 +1264,7 @@ public class GameManager : MonoBehaviour
             RaycastHit ObjectInfo = new RaycastHit();
             bool hit = Physics.Raycast(MainCam.ScreenPointToRay(Input.mousePosition), out ObjectInfo);
 
-            if (hit)
+            if (hit && !Input.GetKey(KeyCode.LeftShift))
             {
                 switch (ObjectInfo.transform.gameObject.tag)
                 {
@@ -1208,12 +1393,6 @@ public class GameManager : MonoBehaviour
             return Unit.GetComponent<F_Pikeman>();
         }
         else if (Unit.GetComponent<F_Wizard>() != null)
-        {
-            return Unit.GetComponent<F_Wizard>();
-        }
-        // Including buildings here to allow them to be considered an attack target
-        // Saves the trouble of rewriting code elsewhere
-        else if (Unit.GetComponent<Building>() != null)
         {
             return Unit.GetComponent<F_Wizard>();
         }

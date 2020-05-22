@@ -8,12 +8,24 @@ public class SpawnGate : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        UnitOnGate = true;
+        switch (other.gameObject.tag)
+        {
+            case "Player":
+            case "Enemy":
+                UnitOnGate = true;
+                break;
+        }    
     }
 
     private void OnTriggerExit(Collider other)
     {
-        UnitOnGate = false;
+        switch (other.gameObject.tag)
+        {
+            case "Player":
+            case "Enemy":
+                UnitOnGate = false;
+                break;
+        }
     }
 
 }
