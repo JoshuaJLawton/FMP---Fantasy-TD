@@ -44,6 +44,7 @@ public class Projectile : MonoBehaviour
 
     }
 
+    // Ensures the projectile cannot somehow go on forever
     IEnumerator KillOverTime()
     {
         yield return new WaitForSeconds(5);
@@ -125,6 +126,7 @@ public class Projectile : MonoBehaviour
         }
     }
 
+    // Deals damage to surrounding units from spells
     void SplashDamage(GameObject HitTarget)
     {        
         switch (HitTarget.tag)

@@ -119,11 +119,9 @@ public class Unit : MonoBehaviour
     #endregion
 
 
-
-
     #region Attacking Functions
 
-
+    // If the unit can attack their target
     public bool CanAttack()
     {
         //Debug.DrawRay(this.transform.position, this.transform.forward * Range, Color.red);
@@ -146,15 +144,15 @@ public class Unit : MonoBehaviour
                     break;
             }
         }
-        
 
+        // RAYCASTS SHOT FROM UNIT MUST BE SHOT FROM POSITIONS HIGHER UP TO AVOID TOUCHING THE GROUND
         Vector3 THIS = new Vector3(this.transform.position.x, this.transform.position.y + 1, this.transform.position.z);
         Vector3 TARGET = new Vector3(AttackTarget.transform.position.x, AttackTarget.transform.position.y + 1, AttackTarget.transform.position.z);
 
         Vector3 Forward = new Vector3(transform.forward.x, this.transform.forward.y, this.transform.forward.z);
 
         RaycastHit ObjectInfo = new RaycastHit();
-        bool hit = Physics.Raycast(THIS, Forward /*(TARGET - THIS).normalized*/ * Range, out ObjectInfo);
+        bool hit = Physics.Raycast(THIS, Forward * Range, out ObjectInfo);
         //Debug.DrawRay(THIS, Forward /*(TARGET - THIS).normalized*/ * Range, Color.red);
 
         // If the attack target is in attack range
@@ -327,6 +325,7 @@ public class Unit : MonoBehaviour
     {
         if (IsBeingHealed && Health < MaxHealth)
         {
+            // Increasees health over time
             UnitClass.Health += 0.75f * Time.deltaTime;
         }
         else if (UnitClass.Health > MaxHealth)
@@ -382,36 +381,6 @@ public class Unit : MonoBehaviour
 
 
     #region AI Functions
-
-    /*
-    public GameObject FindLeader()
-    {
-        GameObject CurrentLeader = null;
-        GameObject[] PotentialLeaders;
-
-        // First check all friendly Units
-        PotentialLeaders = GameObject.FindGameObjectsWithTag("Enemy");
-
-        // Checks all friendlies
-        foreach (GameObject Unit in PotentialLeaders)
-        {
-            Vector3 THIS = new Vector3(this.transform.position.x, this.transform.position.y + 1, this.transform.position.z);
-            Vector3 UNIT = new Vector3(Unit.transform.position.x, Unit.transform.position.y + 1, Unit.transform.position.z);
-
-            // Is the unit within sight distance?
-            if (Vector3.Distance(THIS, UNIT) < 50)
-            {
-                // If this is the first unit being looked at
-                if (CurrentLeader == null)
-                {
-                    CurrentLeader = Unit;
-                }
-
-
-            }
-        }
-    }
-    */
 
     public GameObject GetAITarget()
     {

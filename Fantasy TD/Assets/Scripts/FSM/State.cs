@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// Base State class type
 public interface State
 {
     void Enter();
@@ -17,7 +18,9 @@ public interface State
 
 public class HoldPosition : State
 {
+    // The unit currently using this state
     private GameObject Owner;
+    // That unit's script
     private Unit OwnerScript;
 
     public HoldPosition(GameObject _owner, Unit _ownerScript)
@@ -44,10 +47,13 @@ public class HoldPosition : State
         // If the unit has a leader
         if (OwnerScript.UnitLeader != null)
         {            
+            // Follow the leader
             OwnerScript.agent.SetDestination(OwnerScript.UnitLeader.transform.position + OwnerScript.FollowOffset);
 
+            // If the leader has an attack target
             if (OwnerScript.GetUnitClass(OwnerScript.UnitLeader).AttackTarget != null)
             {
+                // Set attack target to match leader's
                 OwnerScript.AttackTarget = OwnerScript.GetUnitClass(OwnerScript.UnitLeader).AttackTarget;
             }
         }
@@ -57,20 +63,21 @@ public class HoldPosition : State
             // If the unit does not detect an enemy
             if (OwnerScript.DetectEnemy() == null)
             {
+                // Hold their set position
                 OwnerScript.agent.SetDestination(OwnerScript.HoldPosition);
             }
             else
             {
+                // Look for enemy
                 OwnerScript.AttackTarget = OwnerScript.DetectEnemy();
             }
         }
         // If the unit has no leader and autoattack is not enabled
         else
         {
+            // Hold their set position
             OwnerScript.agent.SetDestination(OwnerScript.HoldPosition);
         }
-
-        //OwnerScript.agent.SetDestination(OwnerScript.HoldPosition);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -78,9 +85,9 @@ public class HoldPosition : State
         /////////////////////////////////////////////////////////////////////////////////////////
 
         // If a target has been found
-        // Change to Move State
         if (OwnerScript.AttackTarget != null)
         {
+            // Change to Move State
             OwnerScript.AIBehaviour.ChangeState(new Move(Owner, OwnerScript));
         }
 
@@ -130,9 +137,9 @@ public class LocateTarget : State
         /////////////////////////////////////////////////////////////////////////////////////////
 
         // If a target has been found
-        // Change to Move State
         if (OwnerScript.AttackTarget != null)
         {
+            // Change to Move State
             OwnerScript.AIBehaviour.ChangeState(new Move(Owner, OwnerScript));
         }
         
@@ -162,7 +169,6 @@ public class Move : State
     public void Enter()
     {
         OwnerScript.agent.isStopped = false;
-        //Debug.Log(Owner + "Is Attacking" + OwnerScript.AttackTarget);
     }
 
     public void Execute()
@@ -173,6 +179,7 @@ public class Move : State
 
         if (OwnerScript.AttackTarget != null)
         {
+            // RAYCASTS SHOT FROM UNIT MUST BE SHOT FROM POSITIONS HIGHER UP TO AVOID TOUCHING THE GROUND
             Vector3 THIS = new Vector3(Owner.transform.position.x, Owner.transform.position.y + 1, Owner.transform.position.z);
             Vector3 TARGET = new Vector3(OwnerScript.AttackTarget.transform.position.x, OwnerScript.AttackTarget.transform.position.y + 1, OwnerScript.AttackTarget.transform.position.z);
 
@@ -206,7 +213,7 @@ public class Move : State
         /////////////////////////////////////////////////////////////////////////////////////////
 
         // If the target has been defeated
-        // Change to Locate Target State
+        // Change to Default state
         if (OwnerScript.AttackTarget == null)
         {
             //Debug.Log(Owner + " has lost their target");
@@ -226,19 +233,14 @@ public class Move : State
         // If an enemy or a closer target comes into view
         else if (Owner.tag == "Enemy" && OwnerScript.GetAITarget() != OwnerScript.AttackTarget)
         {
-            switch (Owner.tag)
-            {
-                case "Enemy":
-                    OwnerScript.AIBehaviour.ChangeState(new LocateTarget(Owner, OwnerScript));
-                    break;
-            }
+            // Change to locate target state
+            OwnerScript.AIBehaviour.ChangeState(new LocateTarget(Owner, OwnerScript));
         }
 
         // If the target is within attack range
-        // Change to Attack State
         else if (OwnerScript.CanAttack())
         {
-            //Debug.Log(Owner + " is in attack range");
+            // Change to Attack State
             OwnerScript.AIBehaviour.ChangeState(new Attack(Owner, OwnerScript));
         }
     }
@@ -281,18 +283,14 @@ public class Attack : State
         // If there is a target
         if (OwnerScript.AttackTarget != null)
         {
-            /*
-            Vector3 THIS = new Vector3(Owner.transform.position.x, Owner.transform.position.y + 1, Owner.transform.position.z);
-            Vector3 TARGET = new Vector3(OwnerScript.AttackTarget.transform.position.x, OwnerScript.AttackTarget.transform.position.y + 1, OwnerScript.AttackTarget.transform.position.z);
-            RaycastHit ObjectInFront = new RaycastHit();
-            bool Hit = Physics.Raycast(THIS, Owner.transform.forward, out ObjectInFront, OwnerScript.Range);
-            */
 
             // Turn to face the enemy
             OwnerScript.FaceEnemy();
 
+            // If the unit can attack
             if (OwnerScript.CanAttack())
             {
+                // Attack
                 OwnerScript.StartAttackRoutine();
             }
         }
@@ -302,10 +300,9 @@ public class Attack : State
         /////////////////////////////////////////////////////////////////////////////////////////
 
         // If the target has been defeated
-        // Change to Locate Target State
         if (OwnerScript.AttackTarget == null)
         {
-            //Debug.Log("Lost Attack Target");
+            // Change to Locate Target State
             switch (Owner.tag)
             {
                 case "Player":
@@ -317,9 +314,6 @@ public class Attack : State
                     break;
             }
         }
-
-        // If a more threatening target has been noticed (Previously attacking building and enemy comes into sight)
-        // Change to Locate Target State
 
         // If the attack target is a building
         else if (OwnerScript.AttackTarget.GetComponent<Building>() != null)
@@ -342,9 +336,9 @@ public class Attack : State
         }
         
         //  If the target has moved out of range (Can't attack)
-        // Change to Move State
         else if (!OwnerScript.CanAttack())
         {
+            // Change to Move State
             OwnerScript.AIBehaviour.ChangeState(new Move(Owner, OwnerScript));
         }
     }
@@ -352,6 +346,5 @@ public class Attack : State
     public void Exit()
     {
         OwnerScript.agent.isStopped = true;
-        //Debug.Log("Exiting Attack State");
     }
 }

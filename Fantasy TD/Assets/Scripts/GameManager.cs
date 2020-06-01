@@ -205,17 +205,19 @@ public class GameManager : MonoBehaviour
 
                 AllPlayerUnits = GameObject.FindGameObjectsWithTag("Player");
 
+                // Gets the class script of the current unit
                 if (CurrentUnit != null)
                 {
                     CurrentUnitScript = GetUnitClass(CurrentUnit);
                 }
 
-                // CLEAN THIS UP
+                // Selects the barracks of the current viewpoint
                 if (Barracks[Direction] != null)
                 {
                     SelectedBarracks = Barracks[Direction];
                 }
 
+                // Allows the player to spawn units if the selected barracks is still standing
                 if (SelectedBarracks != null)
                 {
                     SpawnUnitsKeys();
@@ -424,22 +426,6 @@ public class GameManager : MonoBehaviour
         MainMenuPanel.SetActive(true);
     }
 
-    string GetControlTitle(int Index)
-    {
-        string Text = null;
-        switch (Index)
-        {
-            case 0:
-                Text = "Left Click";
-                break;
-            case 1:
-                Text = "Right Click";
-                break;
-        }
-
-        return Text;
-    }
-
     void CloseGame()
     {
         Debug.Log("Close Game");
@@ -450,6 +436,7 @@ public class GameManager : MonoBehaviour
 
     #region Player Input
 
+    // Makes player inputs work
     void PlayerInput()
     {
         // Extra check to make sure unit spawn panel isn't showing
@@ -518,26 +505,6 @@ public class GameManager : MonoBehaviour
                             {
                                 CurrentUnitScript.UnitLeader = ObjectInfo.transform.gameObject;
                                 CurrentUnitScript.FollowOffset = (CurrentUnitScript.HoldPosition - CurrentUnitScript.UnitLeader.transform.position);
-
-
-                                /*
-                                // If the offset is further than 5 points away
-                                if (Vector3.Distance(CurrentUnitScript.FollowOffset, CurrentUnitScript.UnitLeader.transform.position) >= 5.5f)
-                                {
-                                    do
-                                    {
-                                        CurrentUnitScript.FollowOffset = (CurrentUnitScript.FollowOffset - CurrentUnitScript.UnitLeader.transform.position) / 0.1f;
-                                    }
-                                    while (Vector3.Distance(CurrentUnitScript.FollowOffset, CurrentUnitScript.UnitLeader.transform.position) >= 5.5f);
-                                }
-                                else
-                                {
-                                    CurrentUnitScript.FollowOffset = CurrentUnitScript.HoldPosition - CurrentUnitScript.UnitLeader.transform.position;
-                                }
-                                */
-
-
-
                             }
                             break;
                         case "Ground":
@@ -551,12 +518,13 @@ public class GameManager : MonoBehaviour
             }
         }
         
-
+        // Toggle Auto Attack
         if (Input.GetKeyDown(KeyCode.Tab))
         {
             AutoAttack = !AutoAttack;
         }
 
+        // Quick switch between units
         if (Input.GetKeyDown(KeyCode.W))
         {
             SwitchToNextUnit(-1);
@@ -566,6 +534,7 @@ public class GameManager : MonoBehaviour
             SwitchToNextUnit(1);
         }
 
+        // Return to main menu
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             LoadingBar.SetActive(true);
@@ -573,6 +542,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    // Allows the player to spawn units with HUD
     void RunSpawnUnitsButtons()
     {
         if (PlayerHasLost || SelectedBarracks == null)
@@ -668,7 +638,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-
+    // Allows player to spawn units using keys
     void SpawnUnitsKeys()
     {
         // Cost of spawning a unit is 100
@@ -709,6 +679,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    // Determines if the barracks is being blocked
     bool UnitOnGate(GameObject Barracks)
     {
         bool Toggle = false;
@@ -747,6 +718,7 @@ public class GameManager : MonoBehaviour
 
     #region Game Running
 
+    // Determines if the main tower has been destroyed
     bool IsMainTowerStanding()
     {
         if (GameObject.Find("Main Tower") != null)
@@ -761,6 +733,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    // Runs the increase of the player's gold over time
     void Income()
     {
         // Only increases currency if it is less than the max of 2000
@@ -776,38 +749,6 @@ public class GameManager : MonoBehaviour
             Currency = 2000;
         }
     }
-
-    void Waves()
-    {
-        if ((int)Seconds == 0)
-        {
-            Seconds = 61;
-            Wave++;
-            WaveInProgress = true;
-        }
-
-        if (WaveInProgress)
-        {
-            UISeconds.text = "Next wave coming soon.";
-            if (!SpawnWait)
-            {
-                float RandomEnemy = Random.Range(0, EnemyPrefabs.Length);
-
-                float RandomSpawn = Random.Range(0, SpawnGates.Length - 1);
-
-                StartCoroutine(SpawnEnemies((int)RandomEnemy, (int)RandomSpawn));
-            }
-        }
-        else
-        {
-            Seconds -= Time.deltaTime;
-            UISeconds.text = (int)Seconds + " seconds until next wave...";
-        }
-
-        UIWave.text = "WAVE " + Wave;
-    }
-
-
 
     #endregion
 
@@ -1163,15 +1104,6 @@ public class GameManager : MonoBehaviour
         
     }
 
-    /*
-    IEnumerator BarracksBlocked()
-    {
-        UIBarracksBlocked.SetActive(true);
-        yield return new WaitForSeconds(1.5f);
-        UIBarracksBlocked.SetActive(false);
-    }
-    */
-
     void DisplayCurrentUnitUI()
     {
         if (CurrentUnit != null)
@@ -1341,6 +1273,38 @@ public class GameManager : MonoBehaviour
 
     #region Enemies
 
+    // Makes enemies spawn in waves
+    void Waves()
+    {
+        if ((int)Seconds == 0)
+        {
+            Seconds = 61;
+            Wave++;
+            WaveInProgress = true;
+        }
+
+        if (WaveInProgress)
+        {
+            UISeconds.text = "Next wave coming soon.";
+            if (!SpawnWait)
+            {
+                float RandomEnemy = Random.Range(0, EnemyPrefabs.Length);
+
+                float RandomSpawn = Random.Range(0, SpawnGates.Length - 1);
+
+                StartCoroutine(SpawnEnemies((int)RandomEnemy, (int)RandomSpawn));
+            }
+        }
+        else
+        {
+            Seconds -= Time.deltaTime;
+            UISeconds.text = (int)Seconds + " seconds until next wave...";
+        }
+
+        UIWave.text = "WAVE " + Wave;
+    }
+
+    // Spawns enemies
     IEnumerator SpawnEnemies(int RandomEnemy, int RandomSpawn)
     {
         SpawnWait = true;
