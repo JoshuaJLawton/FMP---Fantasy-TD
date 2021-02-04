@@ -82,6 +82,8 @@ public class GameManager : MonoBehaviour
     public GameObject UIButtons, UIButtonPrompt;
     public Button UIKnight, UIArcher, UIPikeman, UIWizard;
 
+    public Image UIGoldImage;
+
     [Header("Cameras")]
     public Camera MainCam;
     public Camera[] InCam = new Camera[4];
@@ -146,10 +148,10 @@ public class GameManager : MonoBehaviour
                 UIBarracksBlocked.SetActive(false);
                 UIPrompt.gameObject.SetActive(false);
 
-                Currency = 500;
+                Currency = 1000;
                 SpawnGates = GameObject.FindGameObjectsWithTag("Spawn Gate");
 
-                AutoAttack = false;
+                AutoAttack = true;
                 break;
         }
     }
@@ -737,16 +739,16 @@ public class GameManager : MonoBehaviour
     void Income()
     {
         // Only increases currency if it is less than the max of 2000
-        if (Currency < 2000)
+        if (Currency < 10000)
         {
             // Currency increases faster while more Income buildings are standing and stops completely when there are none
             GameObject[] IncomeBuildings = GameObject.FindGameObjectsWithTag("Income");
             Currency += (IncomeBuildings.Length * 0.5f) * Time.deltaTime;
         }
         // Sets Currency back to 2000 if it is exceeded
-        else if (Currency > 2000)
+        else if (Currency > 10000)
         {
-            Currency = 2000;
+            Currency = 10000;
         }
     }
 
@@ -826,6 +828,7 @@ public class GameManager : MonoBehaviour
         else
         {
             UICurrency.enabled = false;
+            UIGoldImage.enabled = false;
         }
     }
         
@@ -1063,7 +1066,11 @@ public class GameManager : MonoBehaviour
                 break;
         }
 
-        if (Barracks != null)
+        if (PlayerHasLost)
+        {
+            BarracksHealthBar.SetActive(false);
+        }
+        else if(Barracks != null)
         {
             BarracksHealthBar.SetActive(true);
             BarracksHealthBar.GetComponent<Slider>().minValue = 0;
