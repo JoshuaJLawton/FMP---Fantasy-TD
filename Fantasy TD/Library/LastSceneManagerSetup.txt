@@ -1,5 +1,5 @@
 sceneSetups:
-- path: Assets/Scenes/Cinematic 2.unity
+- path: Assets/_UPDATE/Scenes/Gamefield.unity
   isLoaded: 1
   isActive: 1
   isSubScene: 0

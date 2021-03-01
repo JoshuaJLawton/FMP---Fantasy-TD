@@ -7,7 +7,7 @@ public class MoveTarget : MonoBehaviour
     public GameObject[] Locations;
     public int pointer = 0;
 
-    public int Speed;
+    public float Speed;
 
     // Start is called before the first frame update
     void Start()
